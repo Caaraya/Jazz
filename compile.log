@@ -1,0 +1,79 @@
+In file included from /usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h:37:0,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:236,
+                 from /usr/include/gtksourceview-3.0/gtksourceview/gtksourceview.h:27,
+                 from jazz.cpp:1:
+jazz.cpp: In function ‘void load_file(GtkToolItem*, Data*)’:
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:765:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_OPEN             ((GtkStock)"gtk-open")
+                                      ^
+jazz.cpp:24:4: note: in expansion of macro ‘GTK_STOCK_OPEN’
+    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+    ^
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:159:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_CANCEL           ((GtkStock)"gtk-cancel")
+                                      ^
+jazz.cpp:25:4: note: in expansion of macro ‘GTK_STOCK_CANCEL’
+    GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
+    ^
+jazz.cpp: In function ‘void save_file(GtkToolItem*, Data*)’:
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:964:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_SAVE             ((GtkStock)"gtk-save")
+                                      ^
+jazz.cpp:49:4: note: in expansion of macro ‘GTK_STOCK_SAVE’
+    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+    ^
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:159:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_CANCEL           ((GtkStock)"gtk-cancel")
+                                      ^
+jazz.cpp:50:4: note: in expansion of macro ‘GTK_STOCK_CANCEL’
+    GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
+    ^
+jazz.cpp: In function ‘void activate(GtkApplication*, gpointer)’:
+jazz.cpp:80:28: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
+                            ^
+In file included from /usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h:37:0,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:236,
+                 from /usr/include/gtksourceview-3.0/gtksourceview/gtksourceview.h:27,
+                 from jazz.cpp:1:
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:738:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_NEW              ((GtkStock)"gtk-new")
+                                      ^
+jazz.cpp:80:59: note: in expansion of macro ‘GTK_STOCK_NEW’
+  GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
+                                                           ^
+jazz.cpp:80:72: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
+                                                                        ^
+jazz.cpp:81:29: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
+                             ^
+In file included from /usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h:37:0,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:236,
+                 from /usr/include/gtksourceview-3.0/gtksourceview/gtksourceview.h:27,
+                 from jazz.cpp:1:
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:765:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_OPEN             ((GtkStock)"gtk-open")
+                                      ^
+jazz.cpp:81:60: note: in expansion of macro ‘GTK_STOCK_OPEN’
+  GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
+                                                            ^
+jazz.cpp:81:74: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
+                                                                          ^
+jazz.cpp:82:29: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
+                             ^
+In file included from /usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h:37:0,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:236,
+                 from /usr/include/gtksourceview-3.0/gtksourceview/gtksourceview.h:27,
+                 from jazz.cpp:1:
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:964:38: warning: ‘GtkStock’ is deprecated (declared at /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:108) [-Wdeprecated-declarations]
+ #define GTK_STOCK_SAVE             ((GtkStock)"gtk-save")
+                                      ^
+jazz.cpp:82:60: note: in expansion of macro ‘GTK_STOCK_SAVE’
+  GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
+                                                            ^
+jazz.cpp:82:74: warning: ‘GtkToolItem* gtk_tool_button_new_from_stock(const gchar*)’ is deprecated (declared at /usr/include/gtk-3.0/gtk/gtktoolbutton.h:84): Use 'gtk_tool_button_new' instead [-Wdeprecated-declarations]
+  GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
+                                                                          ^

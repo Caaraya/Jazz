@@ -1,8 +1,14 @@
 #include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksource.h>
 #include <cstdio>
-#include <iostream>
+//#include <iostream>
 
-GtkWidget *window, *toolbar, *swin, *text, *hbox;
+GtkWidget* window 	= nullptr;
+GtkWidget* toolbar 	= nullptr;
+GtkWidget* swin 	= nullptr;
+GtkWidget* source_view 	= nullptr;
+GtkWidget* hbox 	= nullptr;
+GtkSourceLanguageManager* language_manager = nullptr;
 
 struct _Data
 {
@@ -26,15 +32,22 @@ static void load_file(GtkToolItem *button, Data *data)
 	}
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
-		gchar *filename;
+		gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
 		gchar *text_data;
-		filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
-		std::cout << "open: " << filename << std::endl;
+		printf("Open: %s\n", filename);
 		g_file_get_contents( filename, &text_data, NULL, NULL );
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( text ));
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source_view ));
 		gtk_text_buffer_set_text( buff, text_data, -1 );
+
+		auto s_lang = gtk_source_language_manager_guess_language(
+			language_manager,
+			filename,
+			nullptr);
+		gtk_source_buffer_set_language(
+			GTK_SOURCE_BUFFER(buff), s_lang);
+		
 		g_free( filename );
-		g_free( text );
+		g_free( text_data );
 	}
 	gtk_widget_hide(dialog);
 }
@@ -74,9 +87,12 @@ static void activate(GtkApplication* app, gpointer user_data)
 	window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
 	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-	text = gtk_text_view_new();
-	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW( text ));
+	source_view = gtk_source_view_new();
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source_view ));
 	swin = gtk_scrolled_window_new(NULL, NULL);
+	//
+	language_manager = gtk_source_language_manager_get_default ();
+	//
 	GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
 	GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
 	GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
@@ -96,85 +112,12 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
-	gtk_container_add(GTK_CONTAINER(swin), text);
-	
+	gtk_container_add(GTK_CONTAINER(swin), source_view);
 	
 	data->buffer = buffer;
 	data->parent = GTK_WINDOW(window);
 	gtk_widget_show(toolbar);
 	gtk_widget_show_all(window);
-	//g_slice_free(Data, data);
-	/*
-	GtkWidget* window;
-	GtkWidget* toolbar;
-	GtkWidget* hbox;
-	GtkWidget* sview;
-	GtkWidget* scrollwin;
-	GtkWidget* text;
-	GtkTextBuffer* buffer;
-	Data* data;
-	
-	data = g_slice_new( Data );
-	window = gtk_application_window_new(app);
-	toolbar = gtk_toolbar_new();
-	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-	sview = gtk_source_view_new();
-	scrollwin = gtk_scrolled_window_new(0,0);
-	//vbox = gtk_vbox_new(FALSE, 6);
-	gtk_container_add(GTK_CONTAINER(window), hbox);
-	
-	gtk_box_pack_start( GTK_BOX( hbox ), scrollwin, TRUE, TRUE, 0 );
-	
-	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), 0);
-	
-	sep1 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	sep2 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
-	GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
-	GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
-	
-	gtk_scrolled_window_set_policy(	GTK_SCROLLED_WINDOW(scrollwin),	GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-	
-	gtk_box_pack_start(GTK_BOX(hbox),toolbar,FALSE,FALSE,0);
-	//gtk_box_pack_start(GTK_BOX(vbox), window, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy(	GTK_SCROLLED_WINDOW(scrollwin),	GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-	
-	gtk_container_add( GTK_CONTAINER(scrollwin), GTK_WIDGET(sview) );
-	
-	//gtk_box_pack_end(GTK_BOX(hbox),scrollwin,FALSE,FALSE,0);
-	
-	text = gtk_source_view_new();
-	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW( text ));
-	//gtk_container_add(GTK_CONTAINER(scrollwin), text);
-	
-	gtk_container_add(GTK_CONTAINER(sview), text);
-	gtk_container_add( GTK_CONTAINER(item1), GTK_WIDGET(sep1) );
-	gtk_container_add( GTK_CONTAINER(item2), GTK_WIDGET(sep2) );
-	
-	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), new_button, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item1, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), open_button, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item2, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), save_button, -1);
-	gtk_window_set_title(GTK_WINDOW(window), "Window");
-	
-	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), data);
-	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), data);
-	
-	
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
-	
-	//gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), TOOLBAR_ICONS)
-	//gtk_container_add(GTK_CONTAINER(window), toolbar);
-	//gtk_container_add( GTK_CONTAINER(window), toolbar );
-	
-	data->buffer = buffer;
-	data->parent = GTK_WINDOW(window);
-	
-	gtk_widget_show_all(window);
-	
-	g_slice_free(Data, data);
-	*/
 }
 
 int main(int argc, char** argv)
