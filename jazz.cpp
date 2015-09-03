@@ -93,9 +93,15 @@ static void activate(GtkApplication* app, gpointer user_data)
 	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
-	GtkToolItem *new_button = gtk_tool_button_new_from_stock(GTK_STOCK_NEW);
-	GtkToolItem *open_button = gtk_tool_button_new_from_stock(GTK_STOCK_OPEN);
-	GtkToolItem *save_button = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE);
+	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(new_button), "document-new");
+	//
+	GtkToolItem* open_button = gtk_tool_button_new(nullptr, nullptr);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(open_button), "document-open");
+	//
+	GtkToolItem* save_button = gtk_tool_button_new(nullptr, nullptr);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(save_button), "document-save");
+	//
 	// signal connect
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
 	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), data);
@@ -126,7 +132,7 @@ int main(int argc, char** argv)
 	
 	int status;
 	
-	app = gtk_application_new("ca.chr.gtk", G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new("ca.chr.gtk.jazz", G_APPLICATION_FLAGS_NONE);
 	g_signal_connect(app, "activate", G_CALLBACK(activate), 0);
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
