@@ -65,16 +65,16 @@ static void save_file(GtkToolItem *button, Data *data)
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
 		gchar *filename;
-		gchar *text;
+		gchar *text_data;
 		
 		g_object_get( G_OBJECT( data->buffer ), "text",
-			&text, NULL);
+			&text_data, NULL);
 		
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
-		g_file_set_contents( filename, text, -1, NULL);
+		g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
-		g_free( text );
+		g_free( text_data );
 	}
 	gtk_widget_hide(dialog);
 }
