@@ -8,6 +8,12 @@ GtkWidget* toolbar 	= nullptr;
 GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
 GtkWidget* hbox 	= nullptr;
+GtkWidget* notebook = nullptr;
+GtkWidget* frame	= nullptr;
+GtkWidget* label	= nullptr;
+int frame_num = 1;
+char bufferf[32];
+char bufferl[32];
 GtkSourceLanguageManager* language_manager = nullptr;
 
 struct _Data
@@ -18,7 +24,17 @@ struct _Data
 typedef struct _Data Data;
 static void new_file(GtkToolItem *button, Data *data)
 {
-	data->buffer = nullptr;
+	frame = gtk_frame_new(bufferf);
+	//gtk_container_set_border_width(GTK_CONTAINER(frame), 10);
+	//gtk_widget_set_size_request(frame, 400, 500);
+	gtk_widget_show(frame);
+	
+	/*label = gtk_label_new (bufferf);
+	gtk_container_add(GTK_CONTAINER(frame), label);
+	gtk_widget_show(label);*/
+	
+	label = gtk_label_new(bufferl);
+	gtk_notebook_prepend_page(GTK_NOTEBOOK(notebook), frame, label);
 }
 static void load_file(GtkToolItem *button, Data *data)
 {
@@ -83,6 +99,7 @@ static void activate(GtkApplication* app, gpointer user_data)
 	GtkTextBuffer *buffer;
 	Data *data;
 	// initialize
+	notebook = gtk_notebook_new();
 	data = g_slice_new(Data);
 	window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
@@ -106,8 +123,10 @@ static void activate(GtkApplication* app, gpointer user_data)
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
 	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), data);
 	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), data);
+	g_signal_connect (new_button, "clicked", G_CALLBACK(new_file), data);
 	// position
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
+	gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
 	gtk_box_pack_start( GTK_BOX( hbox ), swin, TRUE, TRUE, 0 );
 	// insert toolbar items
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), new_button, -1);
@@ -118,11 +137,13 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
-	gtk_container_add(GTK_CONTAINER(swin), source_view);
+	//gtk_container_add(GTK_CONTAINER(hbox), notebook);
+	gtk_container_add(GTK_CONTAINER(swin), notebook);
+	gtk_container_add(GTK_CONTAINER(notebook), source_view);
 	
 	data->buffer = buffer;
 	data->parent = GTK_WINDOW(window);
-	gtk_widget_show(toolbar);
+	//gtk_widget_show(toolbar);
 	gtk_widget_show_all(window);
 }
 
