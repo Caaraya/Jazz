@@ -1,8 +1,5 @@
 # Select executable sufffix here
-EXE_SUFFIX=.app
-
-# Select object file suffix here:
-OBJ_SUFFIX=.o
+EXE_SFX=.app
 
 # Select compiler here:
 CPP=g++
@@ -14,10 +11,10 @@ CFLAGS=-std=c++11 -c -Wall `pkg-config --cflags gtksourceview-3.0`
 LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtk+-3.0`
 
 all: jazz.o
-	$(CPP) jazz.o $(LDFLAGS) -o jazz$(EXE_SUFFIX)
+	$(CPP) $^ $(LDFLAGS) -o jazz$(EXE_SFX)
 	
 jazz.o: jazz.cpp
 	$(CPP) $(CFLAGS) jazz.cpp
 	
 clean:
-	rm *$(OBJ_SUFFIX)
+	rm *.o
