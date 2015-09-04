@@ -52,15 +52,30 @@ static void load_file(GtkToolItem *button, Data *data)
 		gchar *text_data;
 		printf("Open: %s\n", filename);
 		g_file_get_contents( filename, &text_data, NULL, NULL );
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source_view ));
-		gtk_text_buffer_set_text( buff, text_data, -1 );
 
 		auto s_lang = gtk_source_language_manager_guess_language(
 			language_manager,
 			filename,
 			nullptr);
+		
+		// Append new page
+		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+		auto new_source_view = gtk_source_view_new();
+		auto tab_label = gtk_label_new(filename);
+		
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( new_source_view ));
+		gtk_text_buffer_set_text( buff, text_data, -1 );
+		
 		gtk_source_buffer_set_language(
 			GTK_SOURCE_BUFFER(buff), s_lang);
+		
+		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
+		
+		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
+		
+		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
+		
+		gtk_widget_show_all(notebook);
 		
 		g_free( filename );
 		g_free( text_data );
@@ -119,6 +134,11 @@ static void activate(GtkApplication* app, gpointer user_data)
 	GtkToolItem* save_button = gtk_tool_button_new(nullptr, nullptr);
 	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(save_button), "document-save");
 	//
+	GtkToolItem* seperator = gtk_separator_tool_item_new();
+	//
+	GtkToolItem* compile_button = gtk_tool_button_new(nullptr, nullptr);
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(compile_button), "system-run");
+	//
 	// signal connect
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
 	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), data);
@@ -127,19 +147,22 @@ static void activate(GtkApplication* app, gpointer user_data)
 	// position
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 	gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
-	gtk_box_pack_start( GTK_BOX( hbox ), swin, TRUE, TRUE, 0 );
+	gtk_box_pack_end( GTK_BOX( hbox ), notebook, TRUE, TRUE, 0 );
 	// insert toolbar items
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), new_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), open_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), save_button, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), seperator, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), compile_button, -1);
 	// window set
 	gtk_window_set_title(GTK_WINDOW(window), "Window");
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
 	//gtk_container_add(GTK_CONTAINER(hbox), notebook);
-	gtk_container_add(GTK_CONTAINER(swin), notebook);
-	gtk_container_add(GTK_CONTAINER(notebook), source_view);
+	//gtk_container_add(GTK_CONTAINER(swin), notebook);
+	//tk_container_add(GTK_CONTAINER(notebook), source_view);
+	//gtk_container_add(GTK_CONTAINER(swin), sourceview);
 	
 	data->buffer = buffer;
 	data->parent = GTK_WINDOW(window);
