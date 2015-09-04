@@ -1,7 +1,8 @@
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksource.h>
 #include <cstdio>
-//#include <iostream>
+#include <string>
+#include <iostream>
 
 GtkWidget* window 	= nullptr;
 GtkWidget* toolbar 	= nullptr;
@@ -9,9 +10,9 @@ GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
 GtkWidget* hbox 	= nullptr;
 GtkWidget* notebook = nullptr;
-GtkWidget* frame	= nullptr;
-GtkWidget* label	= nullptr;
-int frame_num = 1;
+//GtkWidget* frame	= nullptr;
+//GtkWidget* label	= nullptr;
+int tab_num = 1;
 char bufferf[32];
 char bufferl[32];
 GtkSourceLanguageManager* language_manager = nullptr;
@@ -24,17 +25,25 @@ struct _Data
 typedef struct _Data Data;
 static void new_file(GtkToolItem *button, Data *data)
 {
-	frame = gtk_frame_new(bufferf);
-	//gtk_container_set_border_width(GTK_CONTAINER(frame), 10);
-	//gtk_widget_set_size_request(frame, 400, 500);
-	gtk_widget_show(frame);
+	auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	auto new_source_view = gtk_source_view_new();
+	std::string str = "Page ";
+	str += std::to_string(tab_num); //char* str = "Page";
+	auto tab_label = gtk_label_new(str.c_str());
 	
-	/*label = gtk_label_new (bufferf);
-	gtk_container_add(GTK_CONTAINER(frame), label);
-	gtk_widget_show(label);*/
+	//auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( new_source_view ));
+		
+	gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
+		
+	gtk_widget_show_all(GTK_WIDGET(scrolled_win));
 	
-	label = gtk_label_new(bufferl);
-	gtk_notebook_prepend_page(GTK_NOTEBOOK(notebook), frame, label);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
+	
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+	
+	gtk_widget_show_all(notebook);
+	//std::cout << tab_num << std::endl;
+	tab_num++;
 }
 static void load_file(GtkToolItem *button, Data *data)
 {
@@ -75,10 +84,13 @@ static void load_file(GtkToolItem *button, Data *data)
 		
 		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
 		
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+		
 		gtk_widget_show_all(notebook);
 		
 		g_free( filename );
 		g_free( text_data );
+		tab_num++;
 	}
 	gtk_widget_hide(dialog);
 }

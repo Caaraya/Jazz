@@ -8,7 +8,7 @@ CPP=g++
 CFLAGS=-std=c++11 -c -Wall `pkg-config --cflags gtksourceview-3.0`
 
 # Select linker flags here:
-LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtk+-3.0`
+LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtk+-3.0 libxml-2.0`
 
 all: jazz.o
 	$(CPP) $^ $(LDFLAGS) -o jazz$(EXE_SFX)
