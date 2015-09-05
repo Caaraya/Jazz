@@ -22,6 +22,58 @@ struct _Data
    GtkWindow     *parent;
 };
 typedef struct _Data Data;
+
+static void close_tab(GtkButton* button, GtkLabel* label)
+{
+	gint pagenum = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+	gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pagenum);
+	
+}
+
+GtkWidget* new_tab_label(const std::string& title)
+{
+	std::string shortname = "";
+	if(title.find("\\")!=std::string::npos)
+		shortname = title.substr(title.find_last_of("\\")+1);
+	else
+		shortname = title;
+	// Create widgets that go in the new tab
+	auto image = gtk_image_new_from_icon_name("window-close",GTK_ICON_SIZE_SMALL_TOOLBAR);
+	auto box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	auto tab_close_button = gtk_button_new();
+	auto tab_label = gtk_label_new(shortname.c_str());
+	// making close button
+	gtk_button_set_relief(GTK_BUTTON(tab_close_button),GTK_RELIEF_NONE);
+	gtk_button_set_focus_on_click(GTK_BUTTON(tab_close_button), false);
+	gtk_button_set_image(GTK_BUTTON(tab_close_button), image);
+	// pack the label on the left, and the button
+	gtk_box_pack_start(GTK_BOX(box), GTK_WIDGET(tab_label), TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(box), tab_close_button, TRUE, TRUE, 0);
+	//
+	g_signal_connect (tab_close_button, "clicked", G_CALLBACK(close_tab), tab_label);
+	// the box shows its widgets
+	gtk_widget_show_all(GTK_WIDGET(box));
+	
+	return box;
+}
+
+GtkWidget* new_sourceview(bool scrollable = true)
+{
+	auto new_source_view = gtk_source_view_new();
+	
+	if(scrollable)
+	{
+		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	
+		// add the sourceview to the scrolled window	
+		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
+		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
+		
+		return scrolled_win;	
+	}
+	return new_source_view;
+}
+
 static void new_file(GtkToolItem *button, Data *data)
 {
 	frame = gtk_frame_new(bufferf);
