@@ -1,7 +1,8 @@
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksource.h>
 #include <cstdio>
-//#include <iostream>
+#include <string>
+#include <iostream>
 
 GtkWidget* window 	= nullptr;
 GtkWidget* toolbar 	= nullptr;
@@ -9,9 +10,9 @@ GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
 GtkWidget* hbox 	= nullptr;
 GtkWidget* notebook = nullptr;
-GtkWidget* frame	= nullptr;
-GtkWidget* label	= nullptr;
-int frame_num = 1;
+//GtkWidget* frame	= nullptr;
+//GtkWidget* label	= nullptr;
+int tab_num = 1;
 char bufferf[32];
 char bufferl[32];
 GtkSourceLanguageManager* language_manager = nullptr;
@@ -76,17 +77,19 @@ GtkWidget* new_sourceview(bool scrollable = true)
 
 static void new_file(GtkToolItem *button, Data *data)
 {
-	frame = gtk_frame_new(bufferf);
-	//gtk_container_set_border_width(GTK_CONTAINER(frame), 10);
-	//gtk_widget_set_size_request(frame, 400, 500);
-	gtk_widget_show(frame);
+	std::string str = "Page ";
+	str += std::to_string(tab_num); //char* str = "Page";
 	
-	/*label = gtk_label_new (bufferf);
-	gtk_container_add(GTK_CONTAINER(frame), label);
-	gtk_widget_show(label);*/
+	auto new_tab_thing = new_tab_label(str);
+	auto new_source_view = new_sourceview();
 	
-	label = gtk_label_new(bufferl);
-	gtk_notebook_prepend_page(GTK_NOTEBOOK(notebook), frame, label);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
+	
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+	
+	gtk_widget_show_all(notebook);
+	//std::cout << tab_num << std::endl;
+	tab_num++;
 }
 static void load_file(GtkToolItem *button, Data *data)
 {
@@ -111,26 +114,26 @@ static void load_file(GtkToolItem *button, Data *data)
 			nullptr);
 		
 		// Append new page
-		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-		auto new_source_view = gtk_source_view_new();
-		auto tab_label = gtk_label_new(filename);
+		auto tab_label = new_tab_label(filename);
+		// the pointer is to a scrolled window containing a sourceview because we didnt pass false
+		auto new_sview = new_sourceview();
 		
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( new_source_view ));
+		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
+		
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
 		gtk_text_buffer_set_text( buff, text_data, -1 );
 		
-		gtk_source_buffer_set_language(
-			GTK_SOURCE_BUFFER(buff), s_lang);
+		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
 		
-		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
+		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_sview, tab_label);
 		
-		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
-		
-		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
 		
 		gtk_widget_show_all(notebook);
 		
 		g_free( filename );
 		g_free( text_data );
+		tab_num++;
 	}
 	gtk_widget_hide(dialog);
 }
@@ -211,14 +214,9 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
-	//gtk_container_add(GTK_CONTAINER(hbox), notebook);
-	//gtk_container_add(GTK_CONTAINER(swin), notebook);
-	//tk_container_add(GTK_CONTAINER(notebook), source_view);
-	//gtk_container_add(GTK_CONTAINER(swin), sourceview);
 	
 	data->buffer = buffer;
 	data->parent = GTK_WINDOW(window);
-	//gtk_widget_show(toolbar);
 	gtk_widget_show_all(window);
 }
 
