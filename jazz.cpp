@@ -85,7 +85,7 @@ static void new_file(GtkToolItem *button, Data *data)
 	
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
 	
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 	
 	gtk_widget_show_all(notebook);
 	//std::cout << tab_num << std::endl;
@@ -127,7 +127,7 @@ static void load_file(GtkToolItem *button, Data *data)
 		
 		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_sview, tab_label);
 		
-		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 		
 		gtk_widget_show_all(notebook);
 		
