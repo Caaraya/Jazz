@@ -23,21 +23,58 @@ struct _Data
    GtkWindow     *parent;
 };
 typedef struct _Data Data;
+
+GtkWidget* new_tab_label(const std::string& title)
+{
+	std::string shortname = "";
+	if(title.find("\\")!=std::string::npos)
+		shortname = title.substr(title.find_last_of("\\")+1);
+	else
+		shortname = title;
+	// Create widgets that go in the new tab
+	auto image = gtk_image_new_from_icon_name("window-close",GTK_ICON_SIZE_SMALL_TOOLBAR);
+	auto box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	auto tab_close_button = gtk_button_new();
+	auto tab_label = gtk_label_new(shortname.c_str());
+	// making close button
+	gtk_button_set_relief(GTK_BUTTON(tab_close_button),GTK_RELIEF_NONE);
+	gtk_button_set_focus_on_click(GTK_BUTTON(tab_close_button), false);
+	gtk_button_set_image(GTK_BUTTON(tab_close_button), image);
+	// pack the label on the left, and the button
+	gtk_box_pack_start(GTK_BOX(box), GTK_WIDGET(tab_label), TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(box), tab_close_button, TRUE, TRUE, 0);
+	// the box shows its widgets
+	gtk_widget_show_all(GTK_WIDGET(box));
+	
+	return box;
+}
+
+GtkWidget* new_sourceview(bool scrollable = true)
+{
+	auto new_source_view = gtk_source_view_new();
+	
+	if(scrollable)
+	{
+		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	
+		// add the sourceview to the scrolled window	
+		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
+		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
+		
+		return scrolled_win;	
+	}
+	return new_source_view;
+}
+
 static void new_file(GtkToolItem *button, Data *data)
 {
-	auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-	auto new_source_view = gtk_source_view_new();
 	std::string str = "Page ";
 	str += std::to_string(tab_num); //char* str = "Page";
-	auto tab_label = gtk_label_new(str.c_str());
 	
-	//auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( new_source_view ));
-		
-	gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
-		
-	gtk_widget_show_all(GTK_WIDGET(scrolled_win));
+	auto new_tab_thing = new_tab_label(str);
+	auto new_source_view = new_sourceview();
 	
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
 	
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
 	
@@ -68,21 +105,18 @@ static void load_file(GtkToolItem *button, Data *data)
 			nullptr);
 		
 		// Append new page
-		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-		auto new_source_view = gtk_source_view_new();
-		auto tab_label = gtk_label_new(filename);
+		auto tab_label = new_tab_label(filename);
+		// the pointer is to a scrolled window containing a sourceview because we didnt pass false
+		auto new_sview = new_sourceview();
 		
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( new_source_view ));
+		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
+		
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
 		gtk_text_buffer_set_text( buff, text_data, -1 );
 		
-		gtk_source_buffer_set_language(
-			GTK_SOURCE_BUFFER(buff), s_lang);
+		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
 		
-		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
-		
-		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
-		
-		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scrolled_win, tab_label);
+		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_sview, tab_label);
 		
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
 		
@@ -171,14 +205,9 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
-	//gtk_container_add(GTK_CONTAINER(hbox), notebook);
-	//gtk_container_add(GTK_CONTAINER(swin), notebook);
-	//tk_container_add(GTK_CONTAINER(notebook), source_view);
-	//gtk_container_add(GTK_CONTAINER(swin), sourceview);
 	
 	data->buffer = buffer;
 	data->parent = GTK_WINDOW(window);
-	//gtk_widget_show(toolbar);
 	gtk_widget_show_all(window);
 }
 
