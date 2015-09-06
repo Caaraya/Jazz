@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <string>
 #include <iostream>
+#include "Gtk.hpp"
+using namespace Jazz;
 
 GtkWidget* window 	= nullptr;
 GtkWidget* toolbar 	= nullptr;
@@ -29,8 +31,6 @@ static void close_tab(GtkButton* button, GtkWidget* child_obj)
 	gint pagenum = gtk_notebook_page_num(GTK_NOTEBOOK(notebook), child_obj);
 	
 	gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pagenum);
-	
-	printf("Closing page number: %i\n", pagenum);
 }
 
 GtkWidget* new_tab_label(const std::string& title, GtkWidget* child_held)
@@ -62,22 +62,21 @@ GtkWidget* new_tab_label(const std::string& title, GtkWidget* child_held)
 
 GtkWidget* new_sourceview(bool scrollable = true)
 {
-	auto new_source_view = gtk_source_view_new();
+	Gtk::SourceView source_view;
 	
 	if(scrollable)
 	{
-		auto scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-	
-		// add the sourceview to the scrolled window	
-		gtk_container_add(GTK_CONTAINER(scrolled_win), new_source_view);
-		gtk_widget_show_all(GTK_WIDGET(scrolled_win));
+		Gtk::ScrolledWindow scrolled_window;
 		
-		return scrolled_win;	
+		scrolled_window.Add(source_view);
+		scrolled_window.ShowAll();
+		
+		return scrolled_window.Object();
 	}
-	return new_source_view;
+	return source_view.Object();
 }
 
-static void new_file(GtkToolItem *button, Data *data)
+static void new_file(GtkToolItem *button, void*)
 {
 	std::string str = "Page ";
 	str += std::to_string(tab_num); //char* str = "Page";
@@ -93,16 +92,11 @@ static void new_file(GtkToolItem *button, Data *data)
 	//std::cout << tab_num << std::endl;
 	tab_num++;
 }
-static void load_file(GtkToolItem *button, Data *data)
+static void load_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = nullptr;
-	if (dialog == nullptr)
-	{
-		dialog = gtk_file_chooser_dialog_new("Open File",
-			data->parent, GTK_FILE_CHOOSER_ACTION_OPEN,
-			GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
-	}
+	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
+			"_Open", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
 		gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
@@ -137,25 +131,36 @@ static void load_file(GtkToolItem *button, Data *data)
 		g_free( text_data );
 		tab_num++;
 	}
-	gtk_widget_hide(dialog);
+	//gtk_widget_hide(dialog);
+	gtk_widget_destroy(dialog);
 }
-static void save_file(GtkToolItem *button, Data *data)
+static void save_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = nullptr;
-	
-	if(dialog == nullptr)
-	{
-		dialog = gtk_file_chooser_dialog_new("Save file",
-			data->parent, GTK_FILE_CHOOSER_ACTION_SAVE,
-			GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
-	}
+	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
+			"_Save", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
 		gchar *filename;
 		gchar *text_data;
 		
-		g_object_get( G_OBJECT( data->buffer ), "text",
+		Gtk::Notebook the_notebook(notebook);
+		
+		GtkWidget* the_child = the_notebook.CurrentPage().Object();
+		GtkSourceView* the_sourceview = nullptr;
+		
+		if(GTK_IS_SCROLLED_WINDOW(the_child))
+			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(the_child)));
+		else
+			the_sourceview = GTK_SOURCE_VIEW(the_child);
+			
+		Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
+		
+		Gtk::Buffer the_buffer = sourceview.GetBuffer();		
+		
+		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
+		
+		g_object_get( G_OBJECT( the_buffer.Object() ), "text",
 			&text_data, NULL);
 		
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
@@ -164,21 +169,17 @@ static void save_file(GtkToolItem *button, Data *data)
 		g_free( filename );
 		g_free( text_data );
 	}
-	gtk_widget_hide(dialog);
+	//gtk_widget_hide(dialog);
+	gtk_widget_destroy(dialog);
 }
 static void activate(GtkApplication* app, gpointer user_data)
 {
-	GtkTextBuffer *buffer;
-	Data *data;
 	// initialize
 	notebook = gtk_notebook_new();
-	data = g_slice_new(Data);
+	//data = g_slice_new(Data);
 	window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
 	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-	source_view = gtk_source_view_new();
-	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source_view ));
-	swin = gtk_scrolled_window_new(NULL, NULL);
 	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
@@ -198,9 +199,9 @@ static void activate(GtkApplication* app, gpointer user_data)
 	//
 	// signal connect
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
-	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), data);
-	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), data);
-	g_signal_connect (new_button, "clicked", G_CALLBACK(new_file), data);
+	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), nullptr);
+	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), nullptr);
+	g_signal_connect (new_button, "clicked", G_CALLBACK(new_file), nullptr);
 	// position
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 	gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
@@ -217,8 +218,6 @@ static void activate(GtkApplication* app, gpointer user_data)
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
 	
-	data->buffer = buffer;
-	data->parent = GTK_WINDOW(window);
 	gtk_widget_show_all(window);
 }
 
@@ -226,11 +225,9 @@ int main(int argc, char** argv)
 {
 	GtkApplication* app;
 	
-	int status;
-	
 	app = gtk_application_new("ca.chr.gtk.jazz", G_APPLICATION_FLAGS_NONE);
 	g_signal_connect(app, "activate", G_CALLBACK(activate), 0);
-	status = g_application_run(G_APPLICATION(app), argc, argv);
+	int status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
 	
 	return status;
