@@ -1,4 +1,6 @@
+#pragma once
 #include <gtksourceview/gtksourceview.h>
+#include <gtk/gtk.h>
 
 namespace Jazz
 {
@@ -10,6 +12,10 @@ namespace Jazz
 		{
 		public:
 			// Interface
+			GtkWidget* Object() const
+			{
+				return widget;
+			}
 			void Show() const
 			{
 				gtk_widget_show(widget);
@@ -40,6 +46,12 @@ namespace Jazz
 				widget = input;
 			}
 			
+			Widget(const Widget& other)
+			{
+				widget = other.widget;
+				g_object_ref(widget);
+			}
+			
 			Widget(Widget&& other)
 			{
 				widget = other.widget;
@@ -50,11 +62,11 @@ namespace Jazz
 			{
 				if(widget != nullptr)
 				{
-					g_obj_unref(widget);
+					g_object_unref(widget);
 					this->widget = nullptr;
 				}
 			}
-			operator GtkWidget*() { return widget; }
+			operator GtkWidget*() const { return widget; }
 			bool Valid() { return widget != nullptr; }
 		protected:
 			GtkWidget* widget = nullptr;
@@ -64,15 +76,15 @@ namespace Jazz
 		public:
 			Container(GtkWidget* cont):Widget(cont){}
 			//
-			void Add(GtkWidget& other)
+			void Add(const Widget& other)
 			{
-				gtk_container_add(other);
+				gtk_container_add(GTK_CONTAINER(widget),other.Object());
 			}
-			void Remove(GtkWidget& other)
+			void Remove(const Widget& other)
 			{
-				gtk_container_remove(other);
+				gtk_container_remove(GTK_CONTAINER(widget),other.Object());
 			}
-		}
+		};
 		class Bin : public Container
 		{
 		public:
@@ -80,13 +92,13 @@ namespace Jazz
 			//
 			Widget Child() const
 			{	
-				return gtk_bin_get_child(bin);
+				return gtk_bin_get_child(GTK_BIN(widget));
 			}
 		};
 		class ScrolledWindow: public Bin
 		{
 		public:
 			ScrolledWindow(): Bin(gtk_scrolled_window_new(nullptr,nullptr)) {}
-		}
+		};
 	}
 }
