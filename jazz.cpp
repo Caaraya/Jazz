@@ -26,9 +26,15 @@ typedef struct _Data Data;
 
 static void close_tab(GtkButton* button, GtkLabel* label)
 {
+/*
 	gint pagenum = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-	gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pagenum);
-	
+	GtkWidget* child = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), pagenum);
+	GtkWidget* current_label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), child);
+	if (GTK_LABEL(current_label) == label)
+	{
+		gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pagenum);
+	}
+	*/
 }
 
 GtkWidget* new_tab_label(const std::string& title)
