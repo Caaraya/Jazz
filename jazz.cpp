@@ -24,14 +24,16 @@ struct _Data
 };
 typedef struct _Data Data;
 
-static void close_tab(GtkButton* button, GtkLabel* label)
-{
-	gint pagenum = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+static void close_tab(GtkButton* button, GtkWidget* child_obj)
+{	
+	gint pagenum = gtk_notebook_page_num(GTK_NOTEBOOK(notebook), child_obj);
+	
 	gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pagenum);
 	
+	printf("Closing page number: %i\n", pagenum);
 }
 
-GtkWidget* new_tab_label(const std::string& title)
+GtkWidget* new_tab_label(const std::string& title, GtkWidget* child_held)
 {
 	std::string shortname = "";
 	if(title.find("\\")!=std::string::npos)
@@ -51,7 +53,7 @@ GtkWidget* new_tab_label(const std::string& title)
 	gtk_box_pack_start(GTK_BOX(box), GTK_WIDGET(tab_label), TRUE, TRUE, 0);
 	gtk_box_pack_end(GTK_BOX(box), tab_close_button, TRUE, TRUE, 0);
 	//
-	g_signal_connect (tab_close_button, "clicked", G_CALLBACK(close_tab), tab_label);
+	g_signal_connect (tab_close_button, "clicked", G_CALLBACK(close_tab), child_held);//tab_label);
 	// the box shows its widgets
 	gtk_widget_show_all(GTK_WIDGET(box));
 	
@@ -80,12 +82,12 @@ static void new_file(GtkToolItem *button, Data *data)
 	std::string str = "Page ";
 	str += std::to_string(tab_num); //char* str = "Page";
 	
-	auto new_tab_thing = new_tab_label(str);
 	auto new_source_view = new_sourceview();
+	auto new_tab_thing = new_tab_label(str, new_source_view);
 	
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
 	
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 	
 	gtk_widget_show_all(notebook);
 	//std::cout << tab_num << std::endl;
@@ -113,10 +115,10 @@ static void load_file(GtkToolItem *button, Data *data)
 			filename,
 			nullptr);
 		
-		// Append new page
-		auto tab_label = new_tab_label(filename);
 		// the pointer is to a scrolled window containing a sourceview because we didnt pass false
 		auto new_sview = new_sourceview();
+		// Append new page
+		auto tab_label = new_tab_label(filename, new_sview);
 		
 		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
 		
@@ -127,7 +129,7 @@ static void load_file(GtkToolItem *button, Data *data)
 		
 		gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_sview, tab_label);
 		
-		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), tab_num-1);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 		
 		gtk_widget_show_all(notebook);
 		
