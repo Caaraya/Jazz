@@ -146,8 +146,8 @@ static void save_file(GtkToolItem *button, void*)
 		
 		Gtk::Notebook the_notebook(notebook);
 		
-		gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-		GtkWidget* page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
+		//gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+		GtkWidget* page = the_notebook.CurrentPage().Object();//gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
 		GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
 		
 		GtkWidget* the_child = the_notebook.CurrentPage().Object();
