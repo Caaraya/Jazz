@@ -148,6 +148,10 @@ static void save_file(GtkToolItem *button, void*)
 		
 		Gtk::Notebook the_notebook(notebook);
 		
+		//gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+		GtkWidget* page = the_notebook.CurrentPage().Object();//gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
+		GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
+		
 		GtkWidget* the_child = the_notebook.CurrentPage().Object();
 		GtkSourceView* the_sourceview = nullptr;
 		
@@ -166,6 +170,16 @@ static void save_file(GtkToolItem *button, void*)
 			&text_data, NULL);
 		
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
+		
+		std::string filenm = filename;
+		
+		std::string shortname = filenm.substr(filenm.find_last_of("\\")+1);
+		
+		GList* children = gtk_container_get_children(GTK_CONTAINER(label));
+		
+		GList* label_child = g_list_first(children);
+		
+		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str()); //children->data, shortname);
 		
 		g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
