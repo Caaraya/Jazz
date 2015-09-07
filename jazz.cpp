@@ -94,30 +94,51 @@ static void new_file(GtkToolItem *button, void*)
 }
 static void load_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
+	GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
 			"_Open", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
-		gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
-		gchar *text_data;
+		gchar* filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
 		printf("Open: %s\n", filename);
-		g_file_get_contents( filename, &text_data, NULL, NULL );
+		
+		// Construct the new text view, the pointer is to a scrolled
+		// window containing a sourceview because we didnt pass false
+		auto new_sview = new_sourceview();
+		auto tab_label = new_tab_label(filename, new_sview);
+		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
+		
+		GFile* new_file = g_file_new_for_path(filename);
+		GtkSourceFile* new_source_file = gtk_source_file_new();
+		
+		gtk_source_file_set_location(new_source_file, new_file);
+		
+		GtkSourceFileLoader* loader = gtk_source_file_loader_new(
+			GTK_SOURCE_BUFFER(buff), new_source_file);
 
 		auto s_lang = gtk_source_language_manager_guess_language(
 			language_manager,
 			filename,
 			nullptr);
-		
-		// the pointer is to a scrolled window containing a sourceview because we didnt pass false
-		auto new_sview = new_sourceview();
-		// Append new page
-		auto tab_label = new_tab_label(filename, new_sview);
-		
-		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
-		
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
-		gtk_text_buffer_set_text( buff, text_data, -1 );
+			
+		gtk_source_file_loader_load_async(
+			loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+			[](GObject* source_obj, GAsyncResult* res, gpointer loader) -> void {
+				GError* error = nullptr;
+				gboolean success = gtk_source_file_loader_load_finish(
+					(GtkSourceFileLoader*)loader, res, &error);
+				if(success)
+					puts("Successfully opened file");
+				else
+					printf("Failed to open file: %i, %s\n",
+						error->code,error->message);
+			}, 
+			// Pass the loader as the user data, so that we can just keep
+			// the lambda function as is
+			(gpointer)loader);	
+
+		//gtk_text_buffer_set_text( buff, text_data, -1 );
 		
 		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
 		
@@ -128,7 +149,8 @@ static void load_file(GtkToolItem *button, void*)
 		gtk_widget_show_all(notebook);
 		
 		g_free( filename );
-		g_free( text_data );
+		g_object_unref(new_file);
+		//g_free( text_data );
 		tab_num++;
 	}
 	//gtk_widget_hide(dialog);
