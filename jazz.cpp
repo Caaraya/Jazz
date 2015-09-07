@@ -84,7 +84,7 @@ static void new_file(GtkToolItem *button, void*)
 	auto new_source_view = new_sourceview();
 	auto new_tab_thing = new_tab_label(str, new_source_view);
 	
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing);
 	
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 	
@@ -158,7 +158,7 @@ static void load_file(GtkToolItem *button, void*)
 }
 static void save_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
 			"_Save", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
