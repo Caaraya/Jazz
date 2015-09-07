@@ -163,22 +163,19 @@ static void save_file(GtkToolItem *button, void*)
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
-		gchar *filename;
-		//gchar *text_data;
-		
+		// First thing is to aquire the text buffer of the current tab
 		Gtk::Notebook the_notebook(notebook);
-		
-		//gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-		GtkWidget* page = the_notebook.CurrentPage().Object();//gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
+
+		GtkWidget* page = the_notebook.CurrentPage().Object();
 		GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
 		
-		GtkWidget* the_child = the_notebook.CurrentPage().Object();
+		//GtkWidget* the_child = the_notebook.CurrentPage().Object();
 		GtkSourceView* the_sourceview = nullptr;
 		
-		if(GTK_IS_SCROLLED_WINDOW(the_child))
-			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(the_child)));
+		if(GTK_IS_SCROLLED_WINDOW(page)) //the_child))
+			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(page)));//the_child)));
 		else
-			the_sourceview = GTK_SOURCE_VIEW(the_child);
+			the_sourceview = GTK_SOURCE_VIEW(page);//the_child);
 			
 		Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
 		
@@ -187,8 +184,7 @@ static void save_file(GtkToolItem *button, void*)
 		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
 		
 		//g_object_get( G_OBJECT( the_buffer.Object() ), "text", &text_data, NULL);
-		
-		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
+		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
 		std::string filenm = filename;
 		
