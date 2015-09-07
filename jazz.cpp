@@ -164,7 +164,7 @@ static void save_file(GtkToolItem *button, void*)
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
 		gchar *filename;
-		gchar *text_data;
+		//gchar *text_data;
 		
 		Gtk::Notebook the_notebook(notebook);
 		
@@ -186,8 +186,7 @@ static void save_file(GtkToolItem *button, void*)
 		
 		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
 		
-		g_object_get( G_OBJECT( the_buffer.Object() ), "text",
-			&text_data, NULL);
+		//g_object_get( G_OBJECT( the_buffer.Object() ), "text", &text_data, NULL);
 		
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
@@ -201,9 +200,9 @@ static void save_file(GtkToolItem *button, void*)
 		
 		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str()); //children->data, shortname);
 		
-		g_file_set_contents( filename, text_data, -1, NULL);
+		//g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
-		g_free( text_data );
+		//g_free( text_data );
 	}
 	//gtk_widget_hide(dialog);
 	gtk_widget_destroy(dialog);
