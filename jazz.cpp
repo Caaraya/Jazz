@@ -12,20 +12,22 @@ GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
 GtkWidget* hbox 	= nullptr;
 GtkWidget* notebook = nullptr;
+GtkWidget* menu		= nullptr;
+GtkWidget* menu_bar	= nullptr;
 //GtkWidget* frame	= nullptr;
 //GtkWidget* label	= nullptr;
 int tab_num = 1;
 char bufferf[32];
 char bufferl[32];
 GtkSourceLanguageManager* language_manager = nullptr;
-
+/*
 struct _Data
 {
    GtkTextBuffer *buffer;
    GtkWindow     *parent;
 };
 typedef struct _Data Data;
-
+*/
 static void close_tab(GtkButton* button, GtkWidget* child_obj)
 {	
 	gint pagenum = gtk_notebook_page_num(GTK_NOTEBOOK(notebook), child_obj);
@@ -176,10 +178,24 @@ static void activate(GtkApplication* app, gpointer user_data)
 {
 	// initialize
 	notebook = gtk_notebook_new();
+	menu_bar = gtk_menu_bar_new();
 	//data = g_slice_new(Data);
+	menu = gtk_menu_new();
 	window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
 	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
+	//create menu items
+	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
+	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
+	GtkWidget* save_item = gtk_menu_item_new_with_label("Save");
+	//GtkMenuItem* quit_item = gtk_menu_item_new_with_label("Quit");
+	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
+	// add to menu
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), new_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), open_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), save_item);
+	//gtk_menu_append(GTK_MENU(menu), quit_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_item);
 	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
@@ -202,10 +218,22 @@ static void activate(GtkApplication* app, gpointer user_data)
 	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), nullptr);
 	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), nullptr);
 	g_signal_connect (new_button, "clicked", G_CALLBACK(new_file), nullptr);
+	g_signal_connect (G_OBJECT(new_item), "activate", G_CALLBACK(new_file), nullptr);
+	g_signal_connect (G_OBJECT(open_item), "activate", G_CALLBACK(load_file), nullptr);
+	g_signal_connect (G_OBJECT(save_item), "activate", G_CALLBACK(save_file), nullptr);
+	//g_signal_connect (G_OBJECT(quit_item), "clicked", GTK_SIGNAL_FUNC(destroy), (gpointer) "file.quit");
 	// position
+	gtk_box_pack_start(GTK_BOX(hbox), menu_bar, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 	gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
 	gtk_box_pack_end( GTK_BOX( hbox ), notebook, TRUE, TRUE, 0 );
+	//
+	gtk_widget_show( open_item );
+	gtk_widget_show( save_item );
+	gtk_widget_show( new_item );
+	//gtk_widget_show( quit_item );
+	//
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_item), menu);
 	// insert toolbar items
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), new_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), open_button, -1);
@@ -218,6 +246,8 @@ static void activate(GtkApplication* app, gpointer user_data)
 	// connections
 	gtk_container_add(GTK_CONTAINER(window), hbox);
 	
+	gtk_widget_show(menu_bar);
+	gtk_widget_show(file_item);
 	gtk_widget_show_all(window);
 }
 
