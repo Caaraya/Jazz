@@ -166,8 +166,6 @@ static void save_file(GtkToolItem *button, void*)
 		// First thing is to aquire the text buffer of the current tab
 		Gtk::Notebook the_notebook(notebook);
 
-		//GtkWidget* page = the_notebook.CurrentPage().Object();
-		//GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
 		Gtk::Widget page = the_notebook.CurrentPage();
 		GtkWidget* label = the_notebook.TabForChild(page).Object();
 		
