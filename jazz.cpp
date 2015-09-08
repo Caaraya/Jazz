@@ -186,6 +186,29 @@ static void save_file(GtkToolItem *button, void*)
 		//g_object_get( G_OBJECT( the_buffer.Object() ), "text", &text_data, NULL);
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
+		GFile* new_file = g_file_new_for_path(filename);
+		GtkSourceFile* new_source_file = gtk_source_file_new();
+		
+		gtk_source_file_set_location(new_source_file, new_file);
+		
+		GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(GTK_SOURCE_BUFFER(the_buffer.Object()), new_srcfile_saver, new_file);
+		
+		gtk_source_file_saver_save_async(
+			new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+			[](GObject* source_obj, GAsyncResult* res, gpointer saver) -> void {
+				GError* error = nullptr;
+				gboolean success = gtk_source_file_saver_save_finish(
+					(GtkSourceFileSaver*)saver, res, &error);
+				if(success)
+					puts("Successfully saved file");
+				else
+					printf("Failed to save file: %i, %s\n",
+						error->code,error->message);
+			}, 
+			// Pass the loader as the user data, so that we can just keep
+			// the lambda function as is
+			(gpointer)loader);
+		
 		std::string filenm = filename;
 		
 		std::string shortname = filenm.substr(filenm.find_last_of("\\")+1);
