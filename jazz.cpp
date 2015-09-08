@@ -150,7 +150,7 @@ static void load_file(GtkToolItem *button, void*)
 		
 		g_free( filename );
 		g_object_unref(new_file);
-		//g_free( text_data );
+
 		tab_num++;
 	}
 	//gtk_widget_hide(dialog);
@@ -166,24 +166,22 @@ static void save_file(GtkToolItem *button, void*)
 		// First thing is to aquire the text buffer of the current tab
 		Gtk::Notebook the_notebook(notebook);
 
-		GtkWidget* page = the_notebook.CurrentPage().Object();
-		GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
+		//GtkWidget* page = the_notebook.CurrentPage().Object();
+		//GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
+		Gtk::Widget page = the_notebook.CurrentPage();
+		GtkWidget* label = the_notebook.TabForChild(page).Object();
 		
-		//GtkWidget* the_child = the_notebook.CurrentPage().Object();
 		GtkSourceView* the_sourceview = nullptr;
 		
-		if(GTK_IS_SCROLLED_WINDOW(page)) //the_child))
-			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(page)));//the_child)));
+		if(GTK_IS_SCROLLED_WINDOW(page.Object()))
+			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(page.Object())));
 		else
-			the_sourceview = GTK_SOURCE_VIEW(page);//the_child);
+			the_sourceview = GTK_SOURCE_VIEW(page.Object());//the_child);
 			
 		Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
 		
 		Gtk::Buffer the_buffer = sourceview.GetBuffer();		
-		
-		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
-		
-		//g_object_get( G_OBJECT( the_buffer.Object() ), "text", &text_data, NULL);
+
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
 		GFile* new_file = g_file_new_for_path(filename);
@@ -217,14 +215,11 @@ static void save_file(GtkToolItem *button, void*)
 		
 		GList* label_child = g_list_first(children);
 		
-		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str()); //children->data, shortname);
+		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str());
 		
 		g_object_unref(new_file);
-		//g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
-		//g_free( text_data );
 	}
-	//gtk_widget_hide(dialog);
 	gtk_widget_destroy(dialog);
 }
 static void activate(GtkApplication* app, gpointer user_data)

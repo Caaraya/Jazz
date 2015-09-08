@@ -146,6 +146,10 @@ namespace Jazz
 			{
 				gtk_notebook_append_page(GTK_NOTEBOOK(widget), child.Object(), label.Object());
 			}
+			Widget TabForChild(Widget& child)
+			{
+				return gtk_notebook_get_tab_label(GTK_NOTEBOOK(widget), child.Object());
+			}
 		};
 		
 		class Buffer
