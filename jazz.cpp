@@ -191,7 +191,7 @@ static void save_file(GtkToolItem *button, void*)
 		
 		gtk_source_file_set_location(new_source_file, new_file);
 		
-		GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(GTK_SOURCE_BUFFER(the_buffer.Object()), new_srcfile_saver, new_file);
+		GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(GTK_SOURCE_BUFFER(the_buffer.Object()), new_source_file, new_file);
 		
 		gtk_source_file_saver_save_async(
 			new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
@@ -207,7 +207,7 @@ static void save_file(GtkToolItem *button, void*)
 			}, 
 			// Pass the loader as the user data, so that we can just keep
 			// the lambda function as is
-			(gpointer)loader);
+			(gpointer)new_srcfile_saver);
 		
 		std::string filenm = filename;
 		
