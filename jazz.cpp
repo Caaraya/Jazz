@@ -84,7 +84,7 @@ static void new_file(GtkToolItem *button, void*)
 	auto new_source_view = new_sourceview();
 	auto new_tab_thing = new_tab_label(str, new_source_view);
 	
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing);
 	
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
 	
@@ -94,30 +94,51 @@ static void new_file(GtkToolItem *button, void*)
 }
 static void load_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
+	GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
 			"_Open", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
-		gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
-		gchar *text_data;
+		gchar* filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) );
 		printf("Open: %s\n", filename);
-		g_file_get_contents( filename, &text_data, NULL, NULL );
+		
+		// Construct the new text view, the pointer is to a scrolled
+		// window containing a sourceview because we didnt pass false
+		auto new_sview = new_sourceview();
+		auto tab_label = new_tab_label(filename, new_sview);
+		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
+		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
+		
+		GFile* new_file = g_file_new_for_path(filename);
+		GtkSourceFile* new_source_file = gtk_source_file_new();
+		
+		gtk_source_file_set_location(new_source_file, new_file);
+		
+		GtkSourceFileLoader* loader = gtk_source_file_loader_new(
+			GTK_SOURCE_BUFFER(buff), new_source_file);
 
 		auto s_lang = gtk_source_language_manager_guess_language(
 			language_manager,
 			filename,
 			nullptr);
-		
-		// the pointer is to a scrolled window containing a sourceview because we didnt pass false
-		auto new_sview = new_sourceview();
-		// Append new page
-		auto tab_label = new_tab_label(filename, new_sview);
-		
-		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
-		
-		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
-		gtk_text_buffer_set_text( buff, text_data, -1 );
+			
+		gtk_source_file_loader_load_async(
+			loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+			[](GObject* source_obj, GAsyncResult* res, gpointer loader) -> void {
+				GError* error = nullptr;
+				gboolean success = gtk_source_file_loader_load_finish(
+					(GtkSourceFileLoader*)loader, res, &error);
+				if(success)
+					puts("Successfully opened file");
+				else
+					printf("Failed to open file: %i, %s\n",
+						error->code,error->message);
+			}, 
+			// Pass the loader as the user data, so that we can just keep
+			// the lambda function as is
+			(gpointer)loader);	
+
+		//gtk_text_buffer_set_text( buff, text_data, -1 );
 		
 		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
 		
@@ -128,7 +149,8 @@ static void load_file(GtkToolItem *button, void*)
 		gtk_widget_show_all(notebook);
 		
 		g_free( filename );
-		g_free( text_data );
+		g_object_unref(new_file);
+		//g_free( text_data );
 		tab_num++;
 	}
 	//gtk_widget_hide(dialog);
@@ -136,27 +158,24 @@ static void load_file(GtkToolItem *button, void*)
 }
 static void save_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
 			"_Save", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
 	{
-		gchar *filename;
-		gchar *text_data;
-		
+		// First thing is to aquire the text buffer of the current tab
 		Gtk::Notebook the_notebook(notebook);
-		
-		//gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-		GtkWidget* page = the_notebook.CurrentPage().Object();//gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
+
+		GtkWidget* page = the_notebook.CurrentPage().Object();
 		GtkWidget* label = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
 		
-		GtkWidget* the_child = the_notebook.CurrentPage().Object();
+		//GtkWidget* the_child = the_notebook.CurrentPage().Object();
 		GtkSourceView* the_sourceview = nullptr;
 		
-		if(GTK_IS_SCROLLED_WINDOW(the_child))
-			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(the_child)));
+		if(GTK_IS_SCROLLED_WINDOW(page)) //the_child))
+			the_sourceview = GTK_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(page)));//the_child)));
 		else
-			the_sourceview = GTK_SOURCE_VIEW(the_child);
+			the_sourceview = GTK_SOURCE_VIEW(page);//the_child);
 			
 		Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
 		
@@ -164,10 +183,31 @@ static void save_file(GtkToolItem *button, void*)
 		
 		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
 		
-		g_object_get( G_OBJECT( the_buffer.Object() ), "text",
-			&text_data, NULL);
+		//g_object_get( G_OBJECT( the_buffer.Object() ), "text", &text_data, NULL);
+		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 		
-		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
+		GFile* new_file = g_file_new_for_path(filename);
+		GtkSourceFile* new_source_file = gtk_source_file_new();
+		
+		gtk_source_file_set_location(new_source_file, new_file);
+		
+		GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(GTK_SOURCE_BUFFER(the_buffer.Object()), new_source_file, new_file);
+		
+		gtk_source_file_saver_save_async(
+			new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+			[](GObject* source_obj, GAsyncResult* res, gpointer saver) -> void {
+				GError* error = nullptr;
+				gboolean success = gtk_source_file_saver_save_finish(
+					(GtkSourceFileSaver*)saver, res, &error);
+				if(success)
+					puts("Successfully saved file");
+				else
+					printf("Failed to save file: %i, %s\n",
+						error->code,error->message);
+			}, 
+			// Pass the loader as the user data, so that we can just keep
+			// the lambda function as is
+			(gpointer)new_srcfile_saver);
 		
 		std::string filenm = filename;
 		
@@ -179,9 +219,9 @@ static void save_file(GtkToolItem *button, void*)
 		
 		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str()); //children->data, shortname);
 		
-		g_file_set_contents( filename, text_data, -1, NULL);
+		//g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
-		g_free( text_data );
+		//g_free( text_data );
 	}
 	//gtk_widget_hide(dialog);
 	gtk_widget_destroy(dialog);
