@@ -1,6 +1,9 @@
 // Gtk.hpp by Steve Phillips
 // Racinettee on github.
 // 
+// The file is just a lightweight wrapper for common widgets
+// and the beautification of select segments of source code.
+//
 // Helpful links:
 // https://www.gnu.org/software/guile-gnome/docs/gtk/html/GtkObject.html
 // https://developer.gnome.org/gtk3/stable/GtkWidget.html
@@ -127,6 +130,10 @@ namespace Jazz
 			{
 				return gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), CurrentPageNum());
 			}
+			void SetCurrentPage(gint num)
+			{
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(widget), num);
+			}
 			Widget GetNthPage(gint num)
 			{
 				return gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), num);
@@ -134,6 +141,10 @@ namespace Jazz
 			gint PageCount()
 			{
 				return gtk_notebook_get_n_pages(GTK_NOTEBOOK(widget));
+			}
+			void AddPage(Widget& child, Widget& label)
+			{
+				gtk_notebook_append_page(GTK_NOTEBOOK(widget), child.Object(), label.Object());
 			}
 		};
 		

@@ -60,7 +60,7 @@ GtkWidget* new_tab_label(const std::string& title, GtkWidget* child_held)
 	return box;
 }
 
-GtkWidget* new_sourceview(bool scrollable = true)
+Gtk::Widget new_sourceview(bool scrollable = true)
 {
 	Gtk::SourceView source_view;
 	
@@ -71,9 +71,9 @@ GtkWidget* new_sourceview(bool scrollable = true)
 		scrolled_window.Add(source_view);
 		scrolled_window.ShowAll();
 		
-		return scrolled_window.Object();
+		return scrolled_window;
 	}
-	return source_view.Object();
+	return source_view;
 }
 
 static void new_file(GtkToolItem *button, void*)
@@ -81,15 +81,17 @@ static void new_file(GtkToolItem *button, void*)
 	std::string str = "Page ";
 	str += std::to_string(tab_num); //char* str = "Page";
 	
-	auto new_source_view = new_sourceview();
-	auto new_tab_thing = new_tab_label(str, new_source_view);
+	Gtk::Widget new_source_view = new_sourceview();
+	Gtk::Widget new_tab_thing = new_tab_label(str, new_source_view.Object());
 	
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing);
+	Gtk::Notebook the_notebook(notebook);
 	
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
+	the_notebook.AddPage(new_source_view, new_tab_thing);
 	
-	gtk_widget_show_all(notebook);
-	//std::cout << tab_num << std::endl;
+	the_notebook.SetCurrentPage(-1);
+	
+	the_notebook.ShowAll();
+
 	tab_num++;
 }
 static void load_file(GtkToolItem *button, void*)
@@ -106,7 +108,7 @@ static void load_file(GtkToolItem *button, void*)
 		// window containing a sourceview because we didnt pass false
 		auto new_sview = new_sourceview();
 		auto tab_label = new_tab_label(filename, new_sview);
-		auto source = gtk_bin_get_child (GTK_BIN(new_sview));
+		auto source = gtk_bin_get_child (GTK_BIN(new_sview.Object()));
 		auto buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW( source ));
 		
 		GFile* new_file = g_file_new_for_path(filename);
@@ -137,8 +139,6 @@ static void load_file(GtkToolItem *button, void*)
 			// Pass the loader as the user data, so that we can just keep
 			// the lambda function as is
 			(gpointer)loader);	
-
-		//gtk_text_buffer_set_text( buff, text_data, -1 );
 		
 		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
 		
@@ -219,6 +219,7 @@ static void save_file(GtkToolItem *button, void*)
 		
 		gtk_label_set_text(GTK_LABEL(label_child->data), shortname.c_str()); //children->data, shortname);
 		
+		g_object_unref(new_file);
 		//g_file_set_contents( filename, text_data, -1, NULL);
 		g_free( filename );
 		//g_free( text_data );
