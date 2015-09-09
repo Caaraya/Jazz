@@ -12,8 +12,10 @@ GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
 GtkWidget* hbox 	= nullptr;
 GtkWidget* notebook = nullptr;
-GtkWidget* menu		= nullptr;
+GtkWidget* file_menu	= nullptr;
+GtkWidget* edit_menu	= nullptr;
 GtkWidget* menu_bar	= nullptr;
+GtkWidget* choose_font	=nullptr;
 //GtkWidget* frame	= nullptr;
 //GtkWidget* label	= nullptr;
 int tab_num = 1;
@@ -93,6 +95,17 @@ static void new_file(GtkToolItem *button, void*)
 	gtk_widget_show_all(notebook);
 	//std::cout << tab_num << std::endl;
 	tab_num++;
+}
+static void font_chooser(GtkWidget *font, void*)
+{
+	choose_font = gtk_font_chooser_dialog_new("Choose Font", GTK_WINDOW(window));
+	
+	gtk_font_chooser_set_font(GTK_FONT_CHOOSER(choose_font), "Monospace 10");
+	/*responce = */gtk_dialog_run(GTK_DIALOG(choose_font));
+	gchar* new_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(choose_font));
+	gtk_widget_destroy(choose_font);
+	//if(responce == GTK_RESPONSE_ACCEPT)
+		// whatever
 }
 static void load_file(GtkToolItem *button, void*)
 {
@@ -194,7 +207,8 @@ static void activate(GtkApplication* app, gpointer user_data)
 	notebook = gtk_notebook_new();
 	menu_bar = gtk_menu_bar_new();
 	//data = g_slice_new(Data);
-	menu = gtk_menu_new();
+	file_menu = gtk_menu_new();
+	edit_menu = gtk_menu_new();
 	window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
 	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
@@ -202,14 +216,19 @@ static void activate(GtkApplication* app, gpointer user_data)
 	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
 	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
 	GtkWidget* save_item = gtk_menu_item_new_with_label("Save");
-	//GtkMenuItem* quit_item = gtk_menu_item_new_with_label("Quit");
+	GtkWidget* quit_item = gtk_menu_item_new_with_label("Quit");
 	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
+	GtkWidget* font_item = gtk_menu_item_new_with_label("Font");
+	GtkWidget* edit_item = gtk_menu_item_new_with_label("Edit");
 	// add to menu
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), new_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), open_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), save_item);
-	//gtk_menu_append(GTK_MENU(menu), quit_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), new_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit_item);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(edit_menu), font_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), edit_item);
+	
 	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
@@ -235,7 +254,8 @@ static void activate(GtkApplication* app, gpointer user_data)
 	g_signal_connect (G_OBJECT(new_item), "activate", G_CALLBACK(new_file), nullptr);
 	g_signal_connect (G_OBJECT(open_item), "activate", G_CALLBACK(load_file), nullptr);
 	g_signal_connect (G_OBJECT(save_item), "activate", G_CALLBACK(save_file), nullptr);
-	//g_signal_connect (G_OBJECT(quit_item), "clicked", GTK_SIGNAL_FUNC(destroy), (gpointer) "file.quit");
+	g_signal_connect (G_OBJECT(font_item), "activate", G_CALLBACK(font_chooser), nullptr);
+	g_signal_connect_swapped (G_OBJECT(quit_item), "activate", G_CALLBACK(gtk_widget_destroy), window);
 	// position
 	gtk_box_pack_start(GTK_BOX(hbox), menu_bar, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
@@ -245,9 +265,11 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_widget_show( open_item );
 	gtk_widget_show( save_item );
 	gtk_widget_show( new_item );
-	//gtk_widget_show( quit_item );
+	gtk_widget_show( quit_item );
+	gtk_widget_show( font_item );
 	//
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_item), menu);
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_item), file_menu);
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(edit_item), edit_menu);
 	// insert toolbar items
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), new_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), open_button, -1);
