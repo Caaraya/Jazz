@@ -1,12 +1,13 @@
+#include <gtkmm.h>
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksource.h>
 #include <cstdio>
 #include <string>
 #include <iostream>
-#include "Gtk.hpp"
-using namespace Jazz;
 
-GtkWidget* window 	= nullptr;
+#include "jazz.hpp"
+//using namespace Jazz;
+/*
 GtkWidget* toolbar 	= nullptr;
 GtkWidget* swin 	= nullptr;
 GtkWidget* source_view 	= nullptr;
@@ -22,14 +23,7 @@ int tab_num = 1;
 char bufferf[32];
 char bufferl[32];
 GtkSourceLanguageManager* language_manager = nullptr;
-/*
-struct _Data
-{
-   GtkTextBuffer *buffer;
-   GtkWindow     *parent;
-};
-typedef struct _Data Data;
-*/
+
 static void close_tab(GtkButton* button, GtkWidget* child_obj)
 {	
 	gint pagenum = gtk_notebook_page_num(GTK_NOTEBOOK(notebook), child_obj);
@@ -66,11 +60,11 @@ GtkWidget* new_tab_label(const std::string& title, GtkWidget* child_held)
 
 GtkWidget* new_sourceview(bool scrollable = true)
 {
-	Gtk::SourceView source_view;
+	Jazz::Gtk::SourceView source_view;
 	
 	if(scrollable)
 	{
-		Gtk::ScrolledWindow scrolled_window;
+		Jazz::Gtk::ScrolledWindow scrolled_window;
 		
 		scrolled_window.Add(source_view);
 		scrolled_window.ShowAll();
@@ -98,10 +92,10 @@ static void new_file(GtkToolItem *button, void*)
 }
 static void font_chooser(GtkWidget *font, void*)
 {
-	choose_font = gtk_font_chooser_dialog_new("Choose Font", GTK_WINDOW(window));
+	choose_font = gtk_font_chooser_dialog_new("Choose Font", GTK_WINDOW(window->gobj()));
 	
 	gtk_font_chooser_set_font(GTK_FONT_CHOOSER(choose_font), "Monospace 10");
-	/*responce = */gtk_dialog_run(GTK_DIALOG(choose_font));
+	/*responce = gtk_dialog_run(GTK_DIALOG(choose_font));
 	gchar* new_font = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(choose_font));
 	gtk_widget_destroy(choose_font);
 	//if(responce == GTK_RESPONSE_ACCEPT)
@@ -109,7 +103,7 @@ static void font_chooser(GtkWidget *font, void*)
 }
 static void load_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_OPEN,
+	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(window->gobj()), GTK_FILE_CHOOSER_ACTION_OPEN,
 			"_Open", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
@@ -151,7 +145,7 @@ static void load_file(GtkToolItem *button, void*)
 }
 static void save_file(GtkToolItem *button, void*)
 {
-	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE,
+	static GtkWidget *dialog = gtk_file_chooser_dialog_new("Save file", GTK_WINDOW(window->gobj()), GTK_FILE_CHOOSER_ACTION_SAVE,
 			"_Save", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 	if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
@@ -159,7 +153,7 @@ static void save_file(GtkToolItem *button, void*)
 		gchar *filename;
 		gchar *text_data;
 		
-		Gtk::Notebook the_notebook(notebook);
+		Jazz::Gtk::Notebook the_notebook(notebook);
 		
 		//gint page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
 		GtkWidget* page = the_notebook.CurrentPage().Object();//gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num);
@@ -173,9 +167,9 @@ static void save_file(GtkToolItem *button, void*)
 		else
 			the_sourceview = GTK_SOURCE_VIEW(the_child);
 			
-		Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
+		Jazz::Gtk::SourceView sourceview(GTK_WIDGET(the_sourceview));
 		
-		Gtk::Buffer the_buffer = sourceview.GetBuffer();		
+		Jazz::Gtk::Buffer the_buffer = sourceview.GetBuffer();		
 		
 		//Gtk::Buffer the_buffer(the_notebook.CurrentPage());
 		
@@ -201,15 +195,18 @@ static void save_file(GtkToolItem *button, void*)
 	//gtk_widget_hide(dialog);
 	gtk_widget_destroy(dialog);
 }
-static void activate(GtkApplication* app, gpointer user_data)
+static void activate()
 {
+	puts("Activate called");
+	window = new Gtk::Window;
+	window->set_default_size(600, 500);
 	// initialize
 	notebook = gtk_notebook_new();
 	menu_bar = gtk_menu_bar_new();
 	//data = g_slice_new(Data);
 	file_menu = gtk_menu_new();
 	edit_menu = gtk_menu_new();
-	window = gtk_application_window_new(app);
+	//window = gtk_application_window_new(app);
 	toolbar = gtk_toolbar_new();
 	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
 	//create menu items
@@ -247,7 +244,7 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(compile_button), "system-run");
 	//
 	// signal connect
-	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
+	g_signal_connect(G_OBJECT(window->gobj()), "destroy", G_CALLBACK( gtk_main_quit ), NULL);
 	g_signal_connect (save_button, "clicked", G_CALLBACK(save_file), nullptr);
 	g_signal_connect (open_button, "clicked", G_CALLBACK(load_file), nullptr);
 	g_signal_connect (new_button, "clicked", G_CALLBACK(new_file), nullptr);
@@ -255,7 +252,7 @@ static void activate(GtkApplication* app, gpointer user_data)
 	g_signal_connect (G_OBJECT(open_item), "activate", G_CALLBACK(load_file), nullptr);
 	g_signal_connect (G_OBJECT(save_item), "activate", G_CALLBACK(save_file), nullptr);
 	g_signal_connect (G_OBJECT(font_item), "activate", G_CALLBACK(font_chooser), nullptr);
-	g_signal_connect_swapped (G_OBJECT(quit_item), "activate", G_CALLBACK(gtk_widget_destroy), window);
+	g_signal_connect_swapped (G_OBJECT(quit_item), "activate", G_CALLBACK(gtk_widget_destroy), window->gobj());
 	// position
 	gtk_box_pack_start(GTK_BOX(hbox), menu_bar, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
@@ -277,24 +274,26 @@ static void activate(GtkApplication* app, gpointer user_data)
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), seperator, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), compile_button, -1);
 	// window set
-	gtk_window_set_title(GTK_WINDOW(window), "Window");
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
+	//gtk_window_set_title(GTK_WINDOW(window), "Window");
+	window->set_title("Window");
+//	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);
 	// connections
-	gtk_container_add(GTK_CONTAINER(window), hbox);
+	gtk_container_add(GTK_CONTAINER(window->gobj()), hbox);
 	
 	gtk_widget_show(menu_bar);
 	gtk_widget_show(file_item);
-	gtk_widget_show_all(window);
+	//gtk_widget_show_all(GTK_WIDGET(window->gobj()));
+	window->show_all();
+	puts("activate success");
 }
-
+*/
 int main(int argc, char** argv)
 {
-	GtkApplication* app;
+	puts("Welcome to jazz");
+	auto app = Gtk::Application::create(argc, argv,
+		"ca.chr.apps.jazz");
 	
-	app = gtk_application_new("ca.chr.gtk.jazz", G_APPLICATION_FLAGS_NONE);
-	g_signal_connect(app, "activate", G_CALLBACK(activate), 0);
-	int status = g_application_run(G_APPLICATION(app), argc, argv);
-	g_object_unref(app);
+	Jazz::JazzIDE jazz;
 	
-	return status;
+	return app->run(jazz);
 }
