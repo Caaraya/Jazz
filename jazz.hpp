@@ -11,16 +11,20 @@ class JazzIDE : public Gtk::Window
 {
 public:
 	JazzIDE();
+	~JazzIDE();
 private:
 	Gtk::Box			box;
 	Gtk::Notebook notebook;
 	Gtk::MenuBar*	menubar;
-	Gtk::Menu			filemenu;
-	Gtk::Menu			editmenu;
 	Gtk::Toolbar 	toolbar;
 private:
 	void NewFile();
 	void SaveFile();
 	void OpenFile();
+private:
+	GtkWidget* new_tab_label(const std::string&, GtkWidget* child_held);
+	GtkWidget* new_sourceview(bool scrollable = true);
+private:
+	int nth_tab = 1;
 };
 }

@@ -5,13 +5,19 @@
 #include <string>
 #include <iostream>
 #include "jazz.hpp"
+#include "jazz_tablabel.hpp"
+#include "jazz_sourceview.hpp"
 
 namespace Jazz
 {
 
-JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)
+JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)//, notebook(new Gtk::Notebook())
 {
 	set_default_size(600, 500);
+	
+	add(box);
+	
+	box.pack_start(notebook);
 	
 	GtkWidget* menu_bar = gtk_menu_bar_new();
 	GtkWidget* file_menu = gtk_menu_new();
@@ -47,50 +53,29 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)
 	
 	auto menbar = Glib::wrap(menu_bar);
 	
-	box.pack_start(*menbar);//menu);*/
-	box.pack_end(notebook);
+	box.pack_start(*menbar);
+	
+	notebook.show();
 	
 	box.show_all();
-	
-	add(box);
-	
-	show_all();
-	show_all_children();
+	box.show_all_children();
 	
 	puts("Success constructor");
 	
 	// Connect the new menu button to our member function for it
 	Gtk::MenuItem* new_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(new_item));
 	new_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
+
+	Gtk::Label* label = new Gtk::Label("HEllo WOrld");
+	//Add the Notebook pages:
+  notebook.append_page(*label, "First");
+  
+  label->show();
+//  notebook.append_page(m_Label2, "Second");
 	
-	// initialize
-	//notebook = gtk_notebook_new();
-	//menu_bar = gtk_menu_bar_new();
-	//data = g_slice_new(Data);
-	//file_menu = gtk_menu_new();
-	//edit_menu = gtk_menu_new();
-	//window = gtk_application_window_new(app);
-	//toolbar = gtk_toolbar_new();
-	//hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-	//create menu items
+	show_all();
+	show_all_children();
 	/*
-	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
-	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
-	GtkWidget* save_item = gtk_menu_item_new_with_label("Save");
-	GtkWidget* quit_item = gtk_menu_item_new_with_label("Quit");
-	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
-	GtkWidget* font_item = gtk_menu_item_new_with_label("Font");
-	GtkWidget* edit_item = gtk_menu_item_new_with_label("Edit");
-	// add to menu
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), new_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(edit_menu), font_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), edit_item);
-	
-	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
 	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
@@ -151,9 +136,59 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)
 	puts("activate success");
 	*/
 }
-void JazzIDE::NewFile()
+JazzIDE::~JazzIDE()
 {
-	puts("New clicked!");
+	//delete notebook;
+}
+}
+void Jazz::JazzIDE::NewFile()
+{
+	puts("New File!");
+	SourceView sourceview;
+	
+	Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
+	
+	TabLabel tablabel(*sourceview_wrap);
+	
+	Gtk::Label* label = new Gtk::Label("HEllo WOrld");
+	label->show();
+	
+	notebook.append_page(*label, "Hello?");//tablabel);
+	
+	notebook.show_all();
+	notebook.show_all_children();
+	
+	show_all_children();
+	//puts("New clicked!");
+	//std::string str = "Page ";
+	//str += std::to_string(nth_tab++); //char* str = "Page";
+	
+	//auto new_source_view = new_sourceview();
+	//auto new_tab_thing = new_tab_label(str, new_source_view);
+	
+	//notebook.append_page(*Glib::wrap(new_source_view), *Glib::wrap(new_tab_thing));
+	//gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
+	
+	//gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
+	//notebook.set_current_page(-1);
+	
+//	gtk_widget_show_all(notebook);
+	//notebook.show_all();
 }
 
-}
+/*GtkWidget* Jazz::JazzIDE::new_sourceview(bool scrollable = true)
+{
+	Jazz::Gtk::SourceView source_view;
+	
+	if(scrollable)
+	{
+		Jazz::Gtk::ScrolledWindow scrolled_window;
+		
+		scrolled_window.Add(source_view);
+		scrolled_window.ShowAll();
+		
+		return scrolled_window.Object();
+	}
+	return source_view.Object();
+}*/
+
