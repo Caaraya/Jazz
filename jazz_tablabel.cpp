@@ -15,7 +15,7 @@ namespace Jazz
 	{
 	}
 	
-	TabLabel::TabLabel(const std::string& title, Gtk::Widget& child_ref) :
+	TabLabel::TabLabel(const std::string& title, Gtk::Widget& ref) :
 		Gtk::Box(Gtk::Orientation::ORIENTATION_HORIZONTAL)
 	{
 		std::string shortname = "";
@@ -33,6 +33,17 @@ namespace Jazz
 		pack_start(text_label, true, true);
 		pack_end(close_button, true, true);
 		
-		show_all();		
+		show_all();
+		
+		close_button.signal_clicked().connect(sigc::mem_fun(*this, &TabLabel::Close));
+		
+		child_ref = &ref;
+	}
+	
+	void TabLabel::Close()
+	{
+		printf("Close clicked on: %s\n", text_label.get_text().c_str());
+		Gtk::Notebook* notebook = static_cast<Gtk::Notebook*>(get_parent());
+		notebook->remove_page(*child_ref);
 	}
 }

@@ -11,17 +11,19 @@
 namespace Jazz
 {
 
-JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)//, notebook(new Gtk::Notebook())
+JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
+	language_manager(gtk_source_language_manager_get_default())
 {
 	set_default_size(600, 500);
 	
 	add(box);
-	
-	box.pack_start(notebook);
+	box.pack_end(notebook, true, true);
 	
 	GtkWidget* menu_bar = gtk_menu_bar_new();
 	GtkWidget* file_menu = gtk_menu_new();
 	GtkWidget* edit_menu = gtk_menu_new();
+	
+	GtkWidget* tool_bar = gtk_toolbar_new();
 	
 	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
 	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
@@ -30,6 +32,18 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)//, notebook(new Gtk::Noteb
 	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
 	GtkWidget* font_item = gtk_menu_item_new_with_label("Font");
 	GtkWidget* edit_item = gtk_menu_item_new_with_label("Edit");
+	
+	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
+	GtkToolItem* open_button = gtk_tool_button_new(nullptr, nullptr);
+	GtkToolItem* save_button = gtk_tool_button_new(nullptr, nullptr);
+	GtkToolItem* compile_button = gtk_tool_button_new(nullptr, nullptr);
+	
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(new_button), "document-new");
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(open_button), "document-open");
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(save_button), "document-save");
+	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(compile_button), "system-run");
+	
+	GtkToolItem* seperator = gtk_separator_tool_item_new();
 	
 	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), new_item);
 	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
@@ -42,38 +56,36 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)//, notebook(new Gtk::Noteb
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_item), file_menu);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(edit_item), edit_menu);
 	
-	gtk_widget_show( open_item );
-	gtk_widget_show( save_item );
-	gtk_widget_show( new_item );
-	gtk_widget_show( quit_item );
-	gtk_widget_show( font_item );
+	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), new_button, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), open_button, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), save_button, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), seperator, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), compile_button, -1);
 	
 	gtk_widget_show(menu_bar);
 	gtk_widget_show(file_item);
 	
 	auto menbar = Glib::wrap(menu_bar);
+	auto toolbar = Glib::wrap(tool_bar);
 	
-	box.pack_start(*menbar);
-	
-	notebook.show();
-	
-	box.show_all();
-	box.show_all_children();
-	
+	box.pack_start(*menbar,false,false);
+	box.pack_start(*toolbar, false, false);
+
 	puts("Success constructor");
 	
 	// Connect the new menu button to our member function for it
-	Gtk::MenuItem* new_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(new_item));
-	new_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
-
-	Gtk::Label* label = new Gtk::Label("HEllo WOrld");
-	//Add the Notebook pages:
-  notebook.append_page(*label, "First");
-  
-  label->show();
-//  notebook.append_page(m_Label2, "Second");
+	Gtk::MenuItem* new_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(new_item));
+	new_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
 	
-	show_all();
+	Gtk::MenuItem* open_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(open_item));
+	open_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+
+	Gtk::ToolButton* new_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(new_button));
+	new_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
+	
+	Gtk::ToolButton* open_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(open_button));
+	open_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+	
 	show_all_children();
 	/*
 	language_manager = gtk_source_language_manager_get_default ();
@@ -138,42 +150,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1)//, notebook(new Gtk::Noteb
 }
 JazzIDE::~JazzIDE()
 {
-	//delete notebook;
 }
-}
-void Jazz::JazzIDE::NewFile()
-{
-	puts("New File!");
-	SourceView sourceview;
-	
-	Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
-	
-	TabLabel tablabel(*sourceview_wrap);
-	
-	Gtk::Label* label = new Gtk::Label("HEllo WOrld");
-	label->show();
-	
-	notebook.append_page(*label, "Hello?");//tablabel);
-	
-	notebook.show_all();
-	notebook.show_all_children();
-	
-	show_all_children();
-	//puts("New clicked!");
-	//std::string str = "Page ";
-	//str += std::to_string(nth_tab++); //char* str = "Page";
-	
-	//auto new_source_view = new_sourceview();
-	//auto new_tab_thing = new_tab_label(str, new_source_view);
-	
-	//notebook.append_page(*Glib::wrap(new_source_view), *Glib::wrap(new_tab_thing));
-	//gtk_notebook_append_page(GTK_NOTEBOOK(notebook), new_source_view, new_tab_thing); //scrolled_win, box);//tab_label);//new_source_view, new_tab_thing); 
-	
-	//gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), -1);
-	//notebook.set_current_page(-1);
-	
-//	gtk_widget_show_all(notebook);
-	//notebook.show_all();
 }
 
 /*GtkWidget* Jazz::JazzIDE::new_sourceview(bool scrollable = true)

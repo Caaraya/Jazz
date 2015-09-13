@@ -1,24 +1,6 @@
 #include <gtkmm.h>
-#include <gtksourceview/gtksourceview.h>
-#include <gtksourceview/gtksource.h>
-#include <cstdio>
-#include <string>
-#include <iostream>
-
 #include "jazz.hpp"
-//using namespace Jazz;
 /*
-GtkWidget* toolbar 	= nullptr;
-GtkWidget* swin 	= nullptr;
-GtkWidget* source_view 	= nullptr;
-GtkWidget* hbox 	= nullptr;
-GtkWidget* notebook = nullptr;
-GtkWidget* file_menu	= nullptr;
-GtkWidget* edit_menu	= nullptr;
-GtkWidget* menu_bar	= nullptr;
-GtkWidget* choose_font	=nullptr;
-//GtkWidget* frame	= nullptr;
-//GtkWidget* label	= nullptr;
 int tab_num = 1;
 char bufferf[32];
 char bufferl[32];
@@ -197,36 +179,6 @@ static void save_file(GtkToolItem *button, void*)
 }
 static void activate()
 {
-	puts("Activate called");
-	window = new Gtk::Window;
-	window->set_default_size(600, 500);
-	// initialize
-	notebook = gtk_notebook_new();
-	menu_bar = gtk_menu_bar_new();
-	//data = g_slice_new(Data);
-	file_menu = gtk_menu_new();
-	edit_menu = gtk_menu_new();
-	//window = gtk_application_window_new(app);
-	toolbar = gtk_toolbar_new();
-	hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-	//create menu items
-	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
-	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
-	GtkWidget* save_item = gtk_menu_item_new_with_label("Save");
-	GtkWidget* quit_item = gtk_menu_item_new_with_label("Quit");
-	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
-	GtkWidget* font_item = gtk_menu_item_new_with_label("Font");
-	GtkWidget* edit_item = gtk_menu_item_new_with_label("Edit");
-	// add to menu
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), new_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(edit_menu), font_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), edit_item);
-	
-	//
 	language_manager = gtk_source_language_manager_get_default ();
 	//
 	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
