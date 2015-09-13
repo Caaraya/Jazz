@@ -159,19 +159,3 @@ JazzIDE::~JazzIDE()
 }
 }
 
-/*GtkWidget* Jazz::JazzIDE::new_sourceview(bool scrollable = true)
-{
-	Jazz::Gtk::SourceView source_view;
-	
-	if(scrollable)
-	{
-		Jazz::Gtk::ScrolledWindow scrolled_window;
-		
-		scrolled_window.Add(source_view);
-		scrolled_window.ShowAll();
-		
-		return scrolled_window.Object();
-	}
-	return source_view.Object();
-}*/
-
