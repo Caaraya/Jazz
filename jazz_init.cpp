@@ -79,12 +79,18 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	Gtk::MenuItem* open_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(open_item));
 	open_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+	
+	Gtk::MenuItem* save_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(save_item));
+	save_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
 
 	Gtk::ToolButton* new_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(new_button));
 	new_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
 	
 	Gtk::ToolButton* open_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(open_button));
 	open_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+	
+	Gtk::ToolButton* save_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(save_button));
+	save_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
 	
 	show_all_children();
 	/*
