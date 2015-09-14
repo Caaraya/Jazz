@@ -1,7 +1,6 @@
 #include "jazz.hpp"
 #include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
-#include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksource.h>
 
 namespace Jazz
@@ -21,8 +20,9 @@ namespace Jazz
 	void JazzIDE::OpenFile()
 	{		
 		// Open a file or cancel it :P
-		GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",	GTK_WINDOW(gobj()), 				GTK_FILE_CHOOSER_ACTION_OPEN,
-			"_Open", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+		GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+			GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_OPEN, "_Open",
+			GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 			
 		// If a user chose a file and selected "Open"
 		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
@@ -44,7 +44,8 @@ namespace Jazz
 			// Create a new wrapper for the sourceview
 			Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
 	
-			// Create a new tab label (box containing label and button) contains a reference to the child the notebook has for it
+			// Create a new tab label (box containing label and button) contains a
+			// reference to the child the notebook has for it
 			TabLabel* tablabel = Gtk::manage(new TabLabel(shortname, *sourceview_wrap));
 	
 			// Add the two objects to the notebook
@@ -98,8 +99,9 @@ namespace Jazz
 	}
 	void JazzIDE::SaveFile()
 	{
-		GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File", GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SAVE,
-			"_Save", GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+		GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File",
+			GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SAVE, "_Save",
+			GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
 		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
 		{
 			Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
@@ -113,7 +115,8 @@ namespace Jazz
 			else
 				puts("Text View");
 			
-			GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
+			GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(
+				static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
 			
 			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
 			
@@ -123,7 +126,8 @@ namespace Jazz
 		
 			gtk_source_file_set_location(new_source_file, new_file);
 		
-			GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(s_buffer, new_source_file, new_file);
+			GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(
+				s_buffer, new_source_file, new_file);
 		
 			puts("B4 the async launch");
 			gtk_source_file_saver_save_async(
@@ -159,5 +163,36 @@ namespace Jazz
 			g_free( filename );
 		}
 		gtk_widget_destroy(dialog);
+	}
+	void JazzIDE::Quit()
+	{
+		close();
+	}
+	void JazzIDE::ChooseFont()
+	{
+		Gtk::ScrolledWindow* page = static_cast<Gtk::ScrolledWindow *>(notebook.get_nth_page(notebook.get_current_page()));
+		Gtk::TextView* text_area = static_cast<Gtk::TextView*>(page->get_child());
+		
+		//Glib::ustring font_name = //page->get_font_name();
+		
+		Gtk::FontChooserDialog dialog("Choose Font", *this);
+		
+		//dialog.set_font(font_name);
+		int result = dialog.run();
+		
+		switch(result)
+		{
+			case Gtk::RESPONSE_OK:
+		  {
+		    Glib::ustring font_name = dialog.get_font();
+		    text_area->override_font(Pango::FontDescription(font_name));
+		    break;
+		  }
+		  default:
+		  {
+		    break;
+		  }
+		}
+				
 	}
 }

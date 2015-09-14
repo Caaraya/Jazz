@@ -1,16 +1,10 @@
-#include <gtkmm.h>
-#include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksource.h>
-#include <cstdio>
-#include <string>
-#include <iostream>
 #include "jazz.hpp"
 #include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
 
 namespace Jazz
 {
-
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	language_manager(gtk_source_language_manager_get_default())
 {
@@ -65,10 +59,10 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	gtk_widget_show(menu_bar);
 	gtk_widget_show(file_item);
 	
-	auto menbar = Glib::wrap(menu_bar);
-	auto toolbar = Glib::wrap(tool_bar);
+	menubar = static_cast<Gtk::MenuBar *>(Glib::wrap(menu_bar));
+	toolbar = static_cast<Gtk::Toolbar *>(Glib::wrap(tool_bar));
 	
-	box.pack_start(*menbar,false,false);
+	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
 
 	puts("Success constructor");
@@ -82,6 +76,12 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	Gtk::MenuItem* save_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(save_item));
 	save_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+	
+	Gtk::MenuItem* font_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(font_item));
+	font_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::ChooseFont));
+	
+	Gtk::MenuItem* quit_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(quit_item));
+	quit_item_wrapper->signal_activate().connect(sigc::mem_fun(*this, &JazzIDE::Quit));
 
 	Gtk::ToolButton* new_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(new_button));
 	new_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
@@ -94,8 +94,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	show_all_children();
 }
-JazzIDE::~JazzIDE()
-{
-}
+JazzIDE::~JazzIDE(){}
 }
 
