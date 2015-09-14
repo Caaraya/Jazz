@@ -173,26 +173,12 @@ namespace Jazz
 		Gtk::ScrolledWindow* page = static_cast<Gtk::ScrolledWindow *>(notebook.get_nth_page(notebook.get_current_page()));
 		Gtk::TextView* text_area = static_cast<Gtk::TextView*>(page->get_child());
 		
-		//Glib::ustring font_name = //page->get_font_name();
-		
 		Gtk::FontChooserDialog dialog("Choose Font", *this);
 		
-		//dialog.set_font(font_name);
-		int result = dialog.run();
-		
-		switch(result)
+		if(dialog.run() == Gtk::RESPONSE_OK)
 		{
-			case Gtk::RESPONSE_OK:
-		  {
-		    Glib::ustring font_name = dialog.get_font();
-		    text_area->override_font(Pango::FontDescription(font_name));
-		    break;
-		  }
-		  default:
-		  {
-		    break;
-		  }
-		}
-				
+			Glib::ustring font_name = dialog.get_font();
+			text_area->override_font(Pango::FontDescription(font_name));
+		}				
 	}
 }
