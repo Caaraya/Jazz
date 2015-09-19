@@ -18,6 +18,7 @@ namespace Jazz
 		void OpenFile();
 		void Quit();
 		void ChooseFont();
+		void SetNewPageFont();
 	private:
 		GtkSourceLanguageManager* language_manager;
 	};

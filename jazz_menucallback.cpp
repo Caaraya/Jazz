@@ -5,6 +5,29 @@
 
 namespace Jazz
 {
+	void JazzIDE::SetNewPageFont()
+	{
+		int pages = notebook.get_n_pages();
+		
+		if(pages > 1)
+		{
+			Gtk::Widget* page = notebook.get_nth_page(-1);
+			
+			Gtk::Widget* first_page = notebook.get_nth_page(1);
+			
+			if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
+				page = scrld->get_child();
+				
+			if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(first_page))
+				first_page = scrld->get_child();
+				
+			auto context = first_page->get_pango_context();
+			
+			auto font_des = context->get_font_description();
+			
+			page->override_font(font_des);
+		}
+	}
 	void JazzIDE::NewFile()
 	{
 		SourceView sourceview;
@@ -16,6 +39,10 @@ namespace Jazz
 		notebook.append_page(*sourceview_wrap, *tablabel);
 		
 		notebook.set_current_page(-1);
+		
+		SetNewPageFont();
+		
+		
 	}
 	void JazzIDE::OpenFile()
 	{		
@@ -94,6 +121,10 @@ namespace Jazz
 			
 			// Switch the the newly opened page
 			notebook.set_current_page(-1);
+			
+			//Set the font of the newly opened page
+			SetNewPageFont();
+			
 		}
 		gtk_widget_destroy(dialog);
 	}
@@ -170,15 +201,24 @@ namespace Jazz
 	}
 	void JazzIDE::ChooseFont()
 	{
-		Gtk::ScrolledWindow* page = static_cast<Gtk::ScrolledWindow *>(notebook.get_nth_page(notebook.get_current_page()));
-		Gtk::TextView* text_area = static_cast<Gtk::TextView*>(page->get_child());
+		int pages = notebook.get_n_pages();
+		//Gtk::ScrolledWindow* page = static_cast<Gtk::ScrolledWindow *>(notebook.get_nth_page(notebook.get_current_page()));
+		//Gtk::TextView* text_area = static_cast<Gtk::TextView*>(page->get_child());
 		
 		Gtk::FontChooserDialog dialog("Choose Font", *this);
 		
 		if(dialog.run() == Gtk::RESPONSE_OK)
 		{
 			Glib::ustring font_name = dialog.get_font();
-			text_area->override_font(Pango::FontDescription(font_name));
+			for(int i = 0; i < pages; i++)
+			{
+				Gtk::Widget* cur_page = notebook.get_nth_page(i);
+				if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(cur_page))
+				{
+					cur_page = scrld->get_child();
+				}
+				cur_page->override_font(Pango::FontDescription(font_name));
+			}
 		}				
 	}
 }
