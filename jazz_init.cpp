@@ -2,16 +2,23 @@
 #include "jazz.hpp"
 #include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
+#include "jazz_filetree.hpp"
 
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
+	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
 	language_manager(gtk_source_language_manager_get_default())
 {
 	set_default_size(600, 500);
 	
 	add(box);
-	box.pack_end(notebook, true, true);
+	box.pack_end(h_box, true, true);
+	
+	h_box.pack_end(file_tree, false, false);
+	h_box.pack_end(notebook, true, true);
+	
+	//box.pack_start(tree_view, true, true);
 	
 	GtkWidget* menu_bar = gtk_menu_bar_new();
 	GtkWidget* file_menu = gtk_menu_new();
