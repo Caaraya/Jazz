@@ -1,108 +1,52 @@
-#include <string>
-#include <iostream>
-extern int puts(const char*);
+#include "jazz_diriter.hpp"
+#include <stdexcept>
 
-namespace Racc
+namespace rac
 {
-#if defined(WIN32)
-#else
-#include <dirent.h>
-	class Entry
-	{
-	public:
-		Entry(Entry&& e) : parent(e.parent), ent(e.ent)
-		{
-			e.parent = nullptr;
-			e.ent = nullptr;
-		}
-		Entry(DIR* p, dirent* e): parent(p), ent(e) { }
-		std::string Name() const { return ent->d_name; }
-		bool IsDir() const { return ent->d_type == DT_DIR; }
-		bool IsNull() const { return ent == nullptr; }
-	private:
-		DIR* parent;
-		dirent* ent;
-	};
-	class Directory
-	{
-	public:
-		static const char Separator = '/';
-	
-		Directory(const char* directory)
-		{
-			dp = opendir(directory);
-			beg = readdir(dp);
-		}
-		~Directory()
-		{
-			closedir(dp);
-		}
-		class Iterator
-		{
-		public:
-			Iterator(DIR* dp, dirent* = nullptr);
-			Iterator& operator++();
-			Entry operator*();
-			bool operator==(const Iterator&);
-			bool operator!=(const Iterator&);
-		private:
-			DIR* dp;
-			dirent* ep;
-		};
-	
-		Iterator begin();
-		Iterator end();
-	private:
-		friend class Iterator;
-		DIR* dp;
-		dirent* beg;
-	};
-#endif
+entry::entry(entry&& e) : parent(e.parent), ent(e.ent)
+{
+	e.parent = nullptr;
+	e.ent = nullptr;
 }
-int main()
-{
-	using namespace std;
-	using namespace Racc;
-	Directory dir("../Documents/Jazz");
-	
-	for(auto file : dir)
-	{
-		//puts(file.c_str());
-		cout << file.Name() << (file.IsDir() ? " is a directory\n" : "\n");
-	}
-}
-namespace Racc
-{
-#if defined(WIN32)
-#else
-Directory::Iterator::Iterator(DIR* dir, dirent* entry): dp(dir), ep(entry)
+entry::entry(DIR* p, dirent* e):
+	parent(p), ent(e)
 {
 }
-Directory::Iterator& Directory::Iterator::operator++()
+directory::directory(const char* directory)
+{
+	dp = opendir(directory);
+	
+	if(dp == nullptr)
+		throw std::runtime_error("Invalid directory name passed");
+	beg = readdir(dp);
+}
+directory::iterator::iterator(DIR* dir, dirent* entry): dp(dir), ep(entry)
+{
+}
+directory::iterator& directory::iterator::operator++()
 {
 	ep = readdir(dp);
 	return *this;
 }
-Entry Directory::Iterator::operator*()
+entry directory::iterator::operator*()
 {
 	//return std::string(ep->d_name);
-	return Entry(dp, ep);
+	return entry(dp, ep);
 }
-bool Directory::Iterator::operator==(const Iterator& other)
+bool directory::iterator::operator==(const iterator& other)
 {
 	return ep == other.ep;
 }
-bool Directory::Iterator::operator!=(const Iterator& other)
+bool directory::iterator::operator!=(const iterator& other)
 {
 	return !(*this == other);
 }
-Directory::Iterator Directory::begin()
+directory::iterator directory::begin()
 {
-	return Iterator(dp, beg);
+	return iterator(dp, beg);
 }
-Directory::Iterator Directory::end()
+directory::iterator directory::end()
 {
-	return Iterator(dp);
+	return iterator(dp);
 }
-#endif
 }
