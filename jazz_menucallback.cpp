@@ -41,8 +41,6 @@ namespace Jazz
 		notebook.set_current_page(-1);
 		
 		SetNewPageFont();
-		
-		
 	}
 	void JazzIDE::OpenFile()
 	{		

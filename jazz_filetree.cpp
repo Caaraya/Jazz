@@ -2,17 +2,9 @@
 
 namespace Jazz
 {
-	class FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
-	{
-		public:
-		FileTreeModelColumns()
-		{add(filename);}
-		Gtk::TreeModelColumn<Glib::ustring> filename;
-		//Gtk::TreeModelColumn<Glib::ustring> parent;
-	};
 	FileTree::FileTree(const std::string& path):tree_store()
 	{
-		FileTreeModelColumns column;
+		//FileTreeModelColumns column;
 		
 		// create tree model
 		tree_store = Gtk::TreeStore::create(column);
@@ -39,6 +31,7 @@ namespace Jazz
 		//Add the TreeView's view columns:
 		tree_view.append_column("Name", column.filename);
 
+		add(tree_view);
 		//Connect signal:
 		//tree_view.signal_row_activated().connect(sigc::mem_fun(*this,
 		//            &ExampleWindow::on_treeview_row_activated) );

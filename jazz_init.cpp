@@ -16,10 +16,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	box.pack_end(h_box, true, true);
 	
 	h_box.pack_end(file_tree, false, false);
+	file_tree.set_size_request(150);
 	h_box.pack_end(notebook, true, true);
-	
-	//box.pack_start(tree_view, true, true);
-	
+
 	GtkWidget* menu_bar = gtk_menu_bar_new();
 	GtkWidget* file_menu = gtk_menu_new();
 	GtkWidget* edit_menu = gtk_menu_new();

@@ -3,6 +3,13 @@
 
 namespace Jazz
 {
+	class FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
+	{
+		public:
+		FileTreeModelColumns()
+		{add(filename);}
+		Gtk::TreeModelColumn<Glib::ustring> filename;
+	};
 	class FileTree : public Gtk::ScrolledWindow
 	{
 	public:
@@ -10,5 +17,6 @@ namespace Jazz
 	private:
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;
+		FileTreeModelColumns column;
 	};
 }
