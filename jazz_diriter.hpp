@@ -1,12 +1,6 @@
 #pragma once
 #include <string>
-#include <iterator>
-#if defined(WIN32)
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#else
-#include <dirent.h>
-#endif
+#include <vector>
 /**
  * Example usage
  *
@@ -22,7 +16,44 @@ int main()
 }
 */
 namespace rac
-{
+{	
+	class file
+	{
+	public:
+		file(const std::wstring&, bool);
+		const std::wstring& name() const
+		{
+			return _name;
+		}
+		bool is_dir() const
+		{
+			return _is_dir;
+		}
+		virtual ~file() { }
+	private:
+		std::wstring _name;
+		bool _is_dir;
+	};
+	
+	class directory : public file
+	{
+	public:
+		directory(const std::wstring&);
+		std::vector<file*>& children() const;
+		
+		std::vector<file*>::iterator begin()
+		{
+			return _children.begin();
+		}
+		std::vector<file*>::iterator end()
+		{
+			return _children.end();
+		}
+		~directory();
+	private:
+		std::vector<file*> _children;
+	};
+	/*
 #if defined(WIN32)
 	class entry
 	{
@@ -120,4 +151,5 @@ namespace rac
 		dirent* beg;
 	};
 #endif
+*/
 }
