@@ -32,8 +32,5 @@ jazz_menucallback.o: jazz_menucallback.cpp
 jazz_diriter.o: jazz_diriter.cpp
 	$(CXX) $(CFLAGS) jazz_diriter.cpp
 	
-jazz_filetree.o: jazz_filetree.cpp
-	$(CXX) $(CFLAGS) jazz_filetree.cpp
-	
 clean:
 	rm *.o
