@@ -33,6 +33,11 @@ namespace Jazz
 						puts("Another async Uhhhh : )");
 						for(auto the_file : files)
 						{
+							if (the_file->get_file_type() == Gio::FileType::FILE_TYPE_DIRECTORY)
+							{
+								puts(the_file->get_name().c_str());
+								puts(" is a director");
+							}
 							row = *(tree_store->append());
 							row[column.filename] = the_file->get_name();
 							puts(the_file->get_name().c_str());
