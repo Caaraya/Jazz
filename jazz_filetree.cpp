@@ -12,7 +12,10 @@ namespace Jazz
 		
 		tree_store = Gtk::TreeStore::create(column);
 		tree_view.set_model(tree_store);
+		Gtk::TreeModel::Row* row = nullptr;
+		DrawTree(path, row);
 		
+		/*
 		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
 		
 		file->enumerate_children_async(
@@ -35,8 +38,8 @@ namespace Jazz
 						{
 							if (the_file->get_file_type() == Gio::FileType::FILE_TYPE_DIRECTORY)
 							{
-								puts(the_file->get_name().c_str());
-								puts(" is a director");
+								path += "/";
+								path += the_file->get_name();
 							}
 							row = *(tree_store->append());
 							row[column.filename] = the_file->get_name();
@@ -78,5 +81,52 @@ namespace Jazz
 		//            &ExampleWindow::on_treeview_row_activated) );
   	
   	show_all_children();*/
+	}
+	FileTree::DrawTree(const std::string& path, Gtk::TreeModel::Row* prevRow )
+	{
+		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
+	
+	file->enumerate_children_async(
+		[this, file, prevRow, path](Glib::RefPtr<Gio::AsyncResult>& result) -> void
+		{
+			//puts("Async result has happened");
+			Glib::RefPtr<Gio::FileEnumerator> enumer = file->enumerate_children_finish(result);
+			
+			enumer->next_files_async(
+				[this, file, prevRow, enumer, path](Glib::RefPtr<Gio::AsyncResult>& res)-> void
+				{
+					Glib::ListHandle<Glib::RefPtr<Gio::FileInfo>> files =
+						enumer->next_files_finish(res);
+						
+						Gtk::TreeModel::Row row;
+						//Gtk::TreeModel::Row childrow = *(tree_store->append(row.children));
+						
+					//puts("Another async Uhhhh : )");
+					for(auto the_file : files)
+					{
+						if(prevRow == nullptr)
+						{
+							row = *(tree_store->append());
+							row[column.filename] = the_file->get_name();
+							puts(the_file->get_name().c_str());
+						}
+						else
+						{
+							row = *(tree_store->append(prevRow->children()));
+							row[column.filename] = the_file->get_name();
+							puts(the_file->get_name().c_str());
+						}
+						if (the_file->get_file_type() == Gio::FileType::FILE_TYPE_DIRECTORY)
+						{
+							//path += "/";
+							//path += the_file->get_name();
+							DrawTree(path+"/"+the_file->get_name(), &row);
+						}
+					}
+					show_all_children();
+				},100);
+		},
+		cancellation_token,
+		"standard::*");
 	}
 }
