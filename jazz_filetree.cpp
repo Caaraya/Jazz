@@ -34,12 +34,15 @@ namespace Jazz
 
 					for(auto the_file : files)
 					{
-						Gtk::TreeModel::Row childrow = *(tree_store->append(parent->children()));
-						childrow[column.filename] = the_file->get_name();
-
-						if (the_file->get_file_type() == Gio::FileType::FILE_TYPE_DIRECTORY)
+						if(!the_file->is_backup() && !the_file->is_hidden())
 						{
-							DrawTree(path+"/"+the_file->get_name(), childrow);
+							Gtk::TreeModel::Row childrow = *(tree_store->append(parent->children()));
+							childrow[column.filename] = the_file->get_name();
+
+							if (the_file->get_file_type() == Gio::FileType::FILE_TYPE_DIRECTORY)
+							{
+								DrawTree(path+"/"+the_file->get_name(), childrow);
+							}
 						}
 					}
 					show_all_children();
