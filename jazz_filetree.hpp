@@ -14,8 +14,9 @@ namespace Jazz
 	class FileTree : public Gtk::ScrolledWindow
 	{
 	public:
-		FileTree(const std::string&);
-		DrawTree(const std::string&, Gtk::TreeModel::Row*);
+		FileTree(const std::string& path);
+	private:
+		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
 	private:
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;
