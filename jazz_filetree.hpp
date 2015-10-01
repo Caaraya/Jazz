@@ -17,6 +17,7 @@ namespace Jazz
 		FileTree(const std::string& path);
 	private:
 		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
+		void OpenSelected(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*);
 	private:
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;

@@ -1,5 +1,6 @@
 #include "jazz_filetree.hpp"
 #include <giomm.h>
+#include <iostream>
 
 namespace Jazz
 {
@@ -14,9 +15,10 @@ namespace Jazz
 		tree_view.set_model(tree_store);
 		
 		const Gtk::TreeModel::Row& row = *(tree_store->append());
-  	row[column.filename] = path;
-  	
-  	DrawTree(path, row);
+		row[column.filename] = path;
+		
+		DrawTree(path, row);
+		tree_view.signal_row_activated().connect(sigc::mem_fun(*this, &FileTree::OpenSelected) );
 	}
 	void FileTree::DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent)
 	{
@@ -50,5 +52,14 @@ namespace Jazz
 		},
 		cancellation_token,
 		"standard::*");
+	}
+	void FileTree::OpenSelected(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
+	{
+		Gtk::TreeModel::iterator iter = tree_store->get_iter(path);
+		if(iter)
+		{
+			Gtk::TreeModel::Row row = *iter;
+			std::cout << "Row activated: filename=" << row[column.filename] << std::endl;
+		}
 	}
 }
