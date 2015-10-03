@@ -30,13 +30,14 @@ namespace Jazz
 	}
 	void JazzIDE::NewFile()
 	{
-		SourceView sourceview;
+		//SourceView sourceview;
+		SourceView* source_view = Gtk::manage(new SourceView);
 	
-		Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
+		//Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
 	
-		TabLabel* tablabel = Gtk::manage(new TabLabel(*sourceview_wrap));
+		TabLabel* tablabel = Gtk::manage(new TabLabel(*source_view)); //*sourceview_wrap));
 	
-		notebook.append_page(*sourceview_wrap, *tablabel);
+		notebook.append_page(*source_view, *tablabel); //*sourceview_wrap, *tablabel);
 		
 		notebook.set_current_page(-1);
 		
@@ -63,18 +64,20 @@ namespace Jazz
 				shortname = title;
 
 			// Create a new source view that is scrolled, then get the buffer
-			SourceView sourceview;
-			GtkSourceBuffer* buff = sourceview.get_buffer();
+			//SourceView sourceview;
+			SourceView* source_view = Gtk::manage(new SourceView);
+			
+			GtkSourceBuffer* buff = source_view->get_buffer(); //sourceview.get_buffer();
 	
 			// Create a new wrapper for the sourceview
-			Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
+			//Gtk::Widget* sourceview_wrap = Glib::wrap(sourceview.gobj());
 	
 			// Create a new tab label (box containing label and button) contains a
 			// reference to the child the notebook has for it
-			TabLabel* tablabel = Gtk::manage(new TabLabel(shortname, *sourceview_wrap));
+			TabLabel* tablabel = Gtk::manage(new TabLabel(shortname, *source_view)); //*sourceview_wrap));
 	
 			// Add the two objects to the notebook
-			notebook.append_page(*sourceview_wrap, *tablabel);
+			notebook.append_page(*source_view, *tablabel); //*sourceview_wrap, *tablabel);
 			
 			// ----------------------------------------------------------
 			// Open the file and load it with the sourcefileloader object
