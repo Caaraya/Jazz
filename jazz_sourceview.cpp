@@ -1,33 +1,27 @@
 #include "jazz_sourceview.hpp"
+#include <gtksourceview/gtksource.h>
 #include <gtksourceview/gtksourcebuffer.h>
+
 namespace Jazz
 {
-	SourceView::SourceView(bool scrolled)
-	{
-		GtkWidget* source_view_obj = gtk_source_view_new();
-	
-		if(scrolled)
-		{
-			//Jazz::Gtk::ScrolledWindow scrolled_window;
-			GtkWidget* scrolled_window = gtk_scrolled_window_new(0,0);
-			
-			//scrolled_window.Add(source_view);
-			//scrolled_window.ShowAll();
-			gtk_container_add(GTK_CONTAINER(scrolled_window), source_view_obj);
-			gtk_widget_show_all(scrolled_window);
+	SourceView::SourceView():
+		Gtk::ScrolledWindow(), source_view(GTK_SOURCE_VIEW(gtk_source_view_new()))
+	{	
+		add(*Glib::wrap(GTK_WIDGET(source_view)));
 		
-			actual_view = scrolled_window;
-			scrolled_win = GTK_SCROLLED_WINDOW(scrolled_window);
-			source_view = GTK_SOURCE_VIEW(source_view_obj);
-			return;
-		}
-		actual_view = source_view_obj;
-		source_view = GTK_SOURCE_VIEW(source_view_obj);
+		completion = gtk_source_view_get_completion(source_view);
+		completion_words = gtk_source_completion_words_new("Suggestions", nullptr);
+		gtk_source_completion_words_register(completion_words, gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
+		gtk_source_completion_add_provider(completion,
+			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
+		
+		show_all();
 	}
-	GtkWidget* SourceView::gobj()
+	SourceView::~SourceView()
 	{
-		return actual_view;
+		g_object_unref(completion_words);
 	}
+	
 	GtkSourceBuffer* SourceView::get_buffer() const
 	{
 		return GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
@@ -35,13 +29,5 @@ namespace Jazz
 	GtkSourceView* SourceView::get_sourceview() const
 	{
 		return source_view;
-	}
-	GtkScrolledWindow* SourceView::get_scrolledwindow() const
-	{
-		return scrolled_win;
-	}
-	GtkWidget* SourceView::get_view() const
-	{
-		return actual_view;
 	}
 }

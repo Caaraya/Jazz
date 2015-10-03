@@ -15,7 +15,13 @@ namespace Jazz
 		tree_view.set_model(tree_store);
 		
 		const Gtk::TreeModel::Row& row = *(tree_store->append());
-		row[column.filename] = path;
+
+		// This deals with the case of being passed in current directory: ./ or prev directory: ../
+		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
+		Glib::RefPtr<Gio::FileInfo> file_info = file->query_info("standard::*");
+		
+		row[column.filename] = file_info->get_name();
+		
 		
 		DrawTree(path, row);
 		tree_view.signal_row_activated().connect(sigc::mem_fun(*this, &FileTree::OpenSelected) );
