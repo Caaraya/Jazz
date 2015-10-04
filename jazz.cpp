@@ -1,5 +1,4 @@
 #include "jazz.hpp"
-
 int main(int argc, char** argv)
 {
 	puts("Welcome to jazz");
