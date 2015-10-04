@@ -1,3 +1,6 @@
 [submodule "mruby"]
 	path = mruby
 	url = https://github.com/mruby/mruby.git
+[submodule "mrubybind"]
+	path = mrubybind
+	url = https://github.com/ktaobo/mrubybind.git
