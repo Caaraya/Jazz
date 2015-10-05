@@ -46,3 +46,7 @@ mrubybind.o: mrubybind/mrubybind.cc
 
 clean:
 	rm *.o
+	
+clean_all:
+	rm *.o
+	cd mruby && make clean

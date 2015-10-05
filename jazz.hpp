@@ -1,6 +1,7 @@
 #include <gtkmm.h>
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
+#include <mruby.h>
 namespace Jazz
 {
 	class JazzIDE : public Gtk::Window
@@ -15,6 +16,7 @@ namespace Jazz
 		Gtk::MenuBar*	menubar;
 		Gtk::Toolbar*	toolbar;
 		FileTree file_tree;
+		mrb_state* mrb = nullptr;
 	private:
 		void NewFile();
 		void SaveFile();
