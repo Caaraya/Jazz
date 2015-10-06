@@ -8,7 +8,7 @@ CXX=g++
 CFLAGS=-std=c++11 -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0` -I./mruby/include
 
 # Select linker flags here:
-LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./mruby/build/host/lib -lmruby -lmruby_core
+LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./mruby/build/host/lib -lmruby -lmruby_core -lffi -lpthread -ldl
 
 all: mruby.a jazz
 
@@ -16,7 +16,8 @@ mruby.a:
 	cd mruby && make
 	mkdir -p bin/mrbgems
 	cp mruby/bin/* bin
-	cp -avr mruby/mrbgems bin
+	cp -avr mruby/build/host/mrbgems bin
+	cp -avru mruby/build/mrbgems bin
 	
 	
 jazz: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
@@ -43,6 +44,9 @@ jazz_filetree.o: jazz_filetree.cpp
 	
 mrubybind.o: mrubybind/mrubybind.cc
 	$(CXX) -I./mruby/include -std=c++11 -c -Wall mrubybind/mrubybind.cc
+	
+geminit.o: bin/gem_init.c
+	
 
 clean:
 	rm *.o
