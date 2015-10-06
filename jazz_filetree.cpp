@@ -24,7 +24,7 @@ namespace Jazz
 		
 		
 		DrawTree(path, row);
-		tree_view.signal_row_activated().connect(sigc::mem_fun(*this, &FileTree::OpenSelected) );
+		//tree_view.signal_row_activated().connect(sigc::mem_fun(*this, &FileTree::OpenSelected) );
 	}
 	void FileTree::DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent)
 	{
@@ -58,14 +58,5 @@ namespace Jazz
 		},
 		cancellation_token,
 		"standard::*");
-	}
-	void FileTree::OpenSelected(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
-	{
-		Gtk::TreeModel::iterator iter = tree_store->get_iter(path);
-		if(iter)
-		{
-			Gtk::TreeModel::Row row = *iter;
-			std::cout << "Row activated: filename=" << row[column.filename] << std::endl;
-		}
 	}
 }
