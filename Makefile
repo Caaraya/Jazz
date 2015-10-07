@@ -20,7 +20,7 @@ mruby.a:
 	
 	
 jazz: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
-		 jazz_filetree.o mrubybind.o
+		 jazz_filetree.o mrubybind.o jazz_mrbind.o
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz$(EXE_SFX)
 	
 jazz.o: jazz.cpp
@@ -43,6 +43,9 @@ jazz_filetree.o: jazz_filetree.cpp
 	
 mrubybind.o: mrubybind/mrubybind.cc
 	$(CXX) -I./mruby/include -std=c++11 -c -Wall mrubybind/mrubybind.cc
+	
+jazz_mrbind.o: jazz_mrbind.cpp
+	$(CXX) $(CFLAGS) jazz_mrbind.cpp
 	
 geminit.o: bin/gem_init.c
 	

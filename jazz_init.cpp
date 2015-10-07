@@ -16,7 +16,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	language_manager(gtk_source_language_manager_get_default())
 {
 	mrb = mrb_open();
-	mrb_load_string(mrb, "p Time.new");
 
 	set_default_size(600, 500);
 	
@@ -107,6 +106,15 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	save_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
+	
+	MrbBind();
+	
+	mrb_load_string(mrb,
+		"p Time.new\n"
+		"w = Window.new\n"
+		"w.set_default_size(400, 400)\n"
+		"w.show_all\n"
+	);
 	
 	show_all_children();
 }
