@@ -107,17 +107,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
 	
-	MrbBind();
-	
-	mrb_load_string(mrb,
-		"p Time.new\n"
-		"w = Gtk::Window.new\n"
-		"w.set_default_size(400, 400)\n"
-		"w.add(Gtk::Button.new('Heya'))\n"
-		"w.show_all\n"
-		"p 'made it to the end'"
-	);
-	
 	show_all_children();
 }
 JazzIDE::~JazzIDE()

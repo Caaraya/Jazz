@@ -25,7 +25,6 @@ namespace Jazz
 		void Quit();
 		void ChooseFont();
 		void SetNewPageFont();
-		void MrbBind();
 	private:
 		GtkSourceLanguageManager* language_manager;
 	};
