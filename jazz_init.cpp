@@ -111,9 +111,11 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	mrb_load_string(mrb,
 		"p Time.new\n"
-		"w = Window.new\n"
+		"w = Gtk::Window.new\n"
 		"w.set_default_size(400, 400)\n"
+		"w.add(Gtk::Button.new('Heya'))\n"
 		"w.show_all\n"
+		"p 'made it to the end'"
 	);
 	
 	show_all_children();
