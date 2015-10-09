@@ -4,20 +4,12 @@
 #include "jazz_sourceview.hpp"
 #include "jazz_filetree.hpp"
 #include <iostream>
-// ----------------------------------
-// mruby header
-// ----------------
-#include <mruby/compile.h>
-// -------------------------
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
 	language_manager(gtk_source_language_manager_get_default())
 {
-	mrb = mrb_open();
-	mrb_load_string(mrb, "p Time.new");
-
 	set_default_size(600, 500);
 	
 	add(box);
@@ -112,7 +104,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 }
 JazzIDE::~JazzIDE()
 {
-	mrb_close(mrb);
 }
 void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
 {
