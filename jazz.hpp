@@ -1,6 +1,9 @@
 #include <gtkmm.h>
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
+
+typedef struct WrenVM WrenVM;
+
 namespace Jazz
 {
 	class JazzIDE : public Gtk::Window
@@ -23,8 +26,9 @@ namespace Jazz
 		void Quit();
 		void ChooseFont();
 		void SetNewPageFont();
-		void BindChaiscript();
+		void BindWren();
 	private:
 		GtkSourceLanguageManager* language_manager;
+		WrenVM* vm;
 	};
 }

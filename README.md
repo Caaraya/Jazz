@@ -4,8 +4,12 @@ A code editor written in C++ with Gtk
 ## Dependancies
 - gtkmm3
 - gtksourceview >= 3.14
-- ruby (for compiling mruby)
-- mruby's dependancies
+
+At the moment jazz is using wren experimentally for scripting support.
+Clone it in the samee directory that the Jazz dir resides in and run: make vm inside of wren
+
+## Windows
+using msys2, cmd: pacman -S mingw-w64-x86_64-gtkmm3 mingw-w64-x86_64-gtksourceview3
 
 ### Working features
 - Auto suggestions / completion
@@ -15,5 +19,5 @@ A code editor written in C++ with Gtk
 - File tree works but only shows cwd
 
 ## To compile
-- On linux after you install the required packages run make.
-- On windows msys2 can be used to install the required packages, get ruby via rubyinstaller and then run make in the jazz direcory
+Linux, run: make
+Windows, run: make EXE_SFX=.exe
