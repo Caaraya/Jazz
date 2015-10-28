@@ -29,6 +29,6 @@ namespace Jazz
 		void BindWren();
 	private:
 		GtkSourceLanguageManager* language_manager;
-		WrenVM* vm;
+		//WrenVM* vm;
 	};
 }

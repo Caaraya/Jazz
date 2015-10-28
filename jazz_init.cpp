@@ -4,9 +4,7 @@
 #include "jazz_sourceview.hpp"
 #include "jazz_filetree.hpp"
 #include <iostream>
-extern "C" {
-#include <wren.h>
-}
+
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
@@ -107,21 +105,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
 	
 	show_all_children();
-	
-	BindWren();
-	
-	WrenInterpretResult result = wrenInterpret(
-		vm, "<main>",
-		"import \"Script.Gtk\" for Button, Window\n"
-		"var win = Window.new(\"TOP_LEVEL\")\n"
-		"win.set_default_size(400, 400)\n"
-		"var btn = Button.new(\"Hello World\")\n"
-		"win.add(btn)\n"
-		"win.show_all()\n"
-		"var chil = Button.from(win.get_child())\n"
-		"chil.hide()\n"
-		//"win.remove(btn)\n"
-	);
 }
 JazzIDE::~JazzIDE()
 {
