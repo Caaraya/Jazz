@@ -92,9 +92,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	save_bttn_wrapper->set_tooltip_text("Save As");
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
-	
+
 	project_tree.SetProject(project_doc);
-	
+
 	show_all_children();
 }
 JazzIDE::~JazzIDE()
