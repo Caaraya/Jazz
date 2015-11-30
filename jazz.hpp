@@ -7,8 +7,6 @@
 #include "coralscript/include/jsonparse.hh"
 #include "jazz_watch.hpp"
 
-typedef struct WrenVM WrenVM;
-
 namespace Jazz
 {
 	class JazzIDE : public Gtk::Window

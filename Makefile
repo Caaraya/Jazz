@@ -8,7 +8,7 @@ CFLAGS=-std=c++14 -g -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./coralscript/bin -lcoral
 
 all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
-		 jazz_filetree.o jazz_projecttree.o jazz_newproj_dialog.o jazz_msgbox.o jazz_watch.o
+		 jazz_filetree.o jazz_projecttree.o jazz_newproj_dialog.o jazz_msgbox.o jazz_watch.o jazz_gdb.o
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
 jazz.o: jazz.cpp
@@ -40,6 +40,9 @@ jazz_msgbox.o: jazz_msgbox.cpp
 	
 jazz_watch.o: jazz_watch.cpp
 	$(CXX) $(CFLAGS) jazz_watch.cpp
+	
+jazz_gdb.o: jazz_gdb.cpp
+	$(CXX) $(CFLAGS) jazz_gdb.cpp
 
 clean:
 	rm -f *.o
