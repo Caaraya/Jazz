@@ -5,14 +5,14 @@ EXE_SFX=.app
 CXX=g++
 
 # Select compilation flags here:
-CFLAGS=-std=c++14 -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0` -I../wren/src/include
+CFLAGS=-std=c++14 -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
 # Select linker flags here:
 LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0`
 
 all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
 		 jazz_filetree.o
-	$(CXX) $^ $(LDFLAGS) -L../wren/lib -lwren -o bin/jazz$(EXE_SFX)
+	$(CXX) $^ $(LDFLAGS) -o bin/jazz$(EXE_SFX)
 	
 jazz.o: jazz.cpp
 	$(CXX) $(CFLAGS) jazz.cpp
@@ -33,8 +33,4 @@ jazz_filetree.o: jazz_filetree.cpp
 	$(CXX) $(CFLAGS) jazz_filetree.cpp
 
 clean:
-	rm *.o
-	
-clean_all:
-	rm *.o
-	cd mruby && make clean
+	rm -f *.o
