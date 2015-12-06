@@ -97,7 +97,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 
 	show_all_children();
 	
-	gdb->Command("help");
+	gdb->Command("help\n");
 }
 JazzIDE::~JazzIDE()
 {
