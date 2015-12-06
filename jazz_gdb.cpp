@@ -3,6 +3,10 @@
 #include <glibmm.h>
 #include <unistd.h>
 #include "jazz_gdb.hpp"
+
+namespace sigc {
+  SIGC_FUNCTORS_DEDUCE_RESULT_TYPE_WITH_DECLTYPE
+}
 namespace Jazz
 {
 	GdbInstance::GdbInstance(const char* path_to_exec)
@@ -23,30 +27,23 @@ namespace Jazz
 			&_gdb_out,
 			&_gdb_err
 		);
-		printf("Pipes: in %i & out %i\n", _gdb_in, _gdb_out);
 		
-		g_child_watch_add(_child_pid,
-		[](GPid pid, gint status, gpointer user_data)
-		{
-			// do something if the process exits
-		},
-		nullptr);
 		// Create channels that will be used to read data from pipes
 		#ifdef G_OS_WIN32
-		out_ch = Glib::IOChannel::create_from_win32_fd(_gdb_out);//g_io_channel_win32_new_fd( _gdb_out );
-    	err_ch = Glib::IOChannel::create_from_win32_fd(_gdb_err);//g_io_channel_win32_new_fd( _gdb_err );
+		Glib::RefPtr<Glib::IOChannel> out_ch = Glib::IOChannel::create_from_win32_fd(_gdb_out);
+    	Glib::RefPtr<Glib::IOChannel> err_ch = Glib::IOChannel::create_from_win32_fd(_gdb_err);
 		#else
-		out_ch = Glib::IOChannel::create_from_fd(_gdb_out);//g_io_channel_unix_new( _gdb_out );
-    	err_ch = Glib::IOChannel::create_from_fd(_gdb_err);//g_io_channel_unix_new( _gdb_err );
+		Glib::RefPtr<Glib::IOChannel> out_ch = Glib::IOChannel::create_from_fd(_gdb_out);
+    	Glib::RefPtr<Glib::IOChannel> err_ch = Glib::IOChannel::create_from_fd(_gdb_err);
 		#endif
 		out_src = out_ch->create_watch(Glib::IO_IN);
 		err_src = err_ch->create_watch(Glib::IO_IN);
-		out_src->connect([this](Glib::IOCondition cond){
-			return HandleOutput(cond, this->out_ch);	
+		out_src->connect([out_ch, this](Glib::IOCondition cond){
+			return this->HandleOutput(cond, out_ch);	
 		});
 		out_src->attach(Glib::MainContext::get_default());
-		err_src->connect([this](Glib::IOCondition cond){
-			return HandleOutput(cond, this->err_ch);
+		err_src->connect([err_ch, this](Glib::IOCondition cond){
+			return this->HandleOutput(cond, err_ch);
 		});
 		err_src->attach(Glib::MainContext::get_default());
 	}
