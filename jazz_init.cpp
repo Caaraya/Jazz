@@ -96,6 +96,8 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	project_tree.SetProject(project_doc);
 
 	show_all_children();
+	
+	gdb->Command("help");
 }
 JazzIDE::~JazzIDE()
 {

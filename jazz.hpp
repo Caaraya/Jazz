@@ -6,6 +6,7 @@
 #include  "jazz_tabLabel.hpp"
 #include "coralscript/include/jsonparse.hh"
 #include "jazz_watch.hpp"
+#include "jazz_gdb.hpp"
 
 namespace Jazz
 {
@@ -42,5 +43,7 @@ namespace Jazz
 		void BindWren();
 	private:
 		GtkSourceLanguageManager* language_manager;
+		
+		GdbInstance* gdb = new GdbInstance("gdb");
 	};
 }

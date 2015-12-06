@@ -45,4 +45,4 @@ jazz_gdb.o: jazz_gdb.cpp
 	$(CXX) $(CFLAGS) jazz_gdb.cpp
 
 clean:
-	rm -f *.o
+	rm -rf *.o
