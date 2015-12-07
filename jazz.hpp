@@ -44,6 +44,6 @@ namespace Jazz
 	private:
 		GtkSourceLanguageManager* language_manager;
 		
-		GdbInstance* gdb = new GdbInstance("./bin/jazz.exe");
+		GdbInstance* gdb = new GdbInstance("./test");
 	};
 }

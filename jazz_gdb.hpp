@@ -5,7 +5,7 @@ namespace Jazz
 	public:
 		GdbInstance(const char* path_to_exec);
 		~GdbInstance();
-		void Command(const char*);
+		void Command(const std::string&);
 	private:
 		bool HandleOutput(Glib::IOCondition, Glib::RefPtr<Glib::IOChannel>);
 	private:

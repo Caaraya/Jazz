@@ -51,9 +51,10 @@ namespace Jazz
 	{
 		Glib::spawn_close_pid(_child_pid);
 	}
-	void GdbInstance::Command(const char* command)
+	void GdbInstance::Command(const std::string& command)
 	{
-		write(_gdb_in, command, strlen(command)+1);
+		auto cmd=command+'\n';
+		write(_gdb_in, cmd.c_str(), cmd.size());
 	}
 	bool GdbInstance::HandleOutput(Glib::IOCondition cond, Glib::RefPtr<Glib::IOChannel> ch)
 	{
