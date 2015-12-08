@@ -103,6 +103,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 }
 JazzIDE::~JazzIDE()
 {
+	delete gdb;
 }
 void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
 {

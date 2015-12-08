@@ -49,6 +49,8 @@ namespace Jazz
 	}
 	GdbInstance::~GdbInstance()
 	{
+		out_src->destroy();
+		err_src->destroy();
 		Glib::spawn_close_pid(_child_pid);
 	}
 	void GdbInstance::Command(const std::string& command)
@@ -60,7 +62,8 @@ namespace Jazz
 	{
 		Glib::ustring text;
 		ch->read_line(text);
-		puts(text.c_str());
+		if(text[0] == '*')
+			puts(text.c_str());
 		return true;
 	}
 }
