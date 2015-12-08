@@ -62,8 +62,14 @@ namespace Jazz
 	{
 		Glib::ustring text;
 		ch->read_line(text);
-		if(text[0] == '*')
-			puts(text.c_str());
+		
+		for(auto handler : _handlers)
+			handler(cond, text);
+
 		return true;
+	}
+	void GdbInstance::AddOutHandler(GdbInstance::HandlerType fn)
+	{
+		_handlers.push_back(fn);
 	}
 }

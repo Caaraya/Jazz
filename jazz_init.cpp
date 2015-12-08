@@ -97,6 +97,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 
 	show_all_children();
 	
+	using std::placeholders::_1;
+	using std::placeholders::_2;
+	gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
 	gdb->Command("help");
 	gdb->Command("b gdb_test.cpp:9");
 	gdb->Command("r");
@@ -113,6 +116,21 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 		Gtk::TreeModel::Row row = *iter;
 		std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
 	}
+}
+bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
+{
+	if(thing[0] == '*')
+	{
+		if(thing.find("breakpoint-hit") !=  Glib::ustring::npos)
+		{
+			// find the fullname property and open that file
+			auto new_pos = thing.rfind("fullname=")+10U;
+			auto str = thing.substr(new_pos);
+			str = str.substr(0, str.find('"'));
+			printf("I need to find %s\n", str.c_str());
+		}
+	}
+	return true;
 }
 }
 

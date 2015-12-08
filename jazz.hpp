@@ -41,6 +41,7 @@ namespace Jazz
 		void ChooseFont();
 		void SetNewPageFont();
 		void BindWren();
+		bool HandleGDBOutput(Glib::IOCondition, const Glib::ustring&);
 	private:
 		GtkSourceLanguageManager* language_manager;
 		
