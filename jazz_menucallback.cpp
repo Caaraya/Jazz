@@ -285,7 +285,7 @@ namespace Jazz
 			break;
 		}
 	}
-	void JazzIDE::AddFileToNotebook(const Glib::ustring&, std::function<void(int)>)
+	void JazzIDE::AddFileToNotebook(const Glib::ustring&, std::function<void(int)> callback)
 	{
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 		
@@ -333,14 +333,15 @@ namespace Jazz
 				puts("Successfully opened file");
 				// Switch the the newly opened page
 				notebook.set_current_page(-1);
+				callback(note)
 			}
 			else
 				printf("Failed to open file: %i, %s\n",
 					error->code,error->message);
-			}, 
-			// Pass the loader as the user data, so that we can just keep
-			// the lambda function as is
-			(gpointer)loader);
+		}, 
+		// Pass the loader as the user data, so that we can just keep
+		// the lambda function as is
+		(gpointer)loader);
 
 		// Set the language of the source buffer for syntax highlighting
 		auto s_lang = gtk_source_language_manager_guess_language(
