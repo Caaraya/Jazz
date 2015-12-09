@@ -127,7 +127,7 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			auto new_pos = thing.rfind("fullname=")+10U;
 			auto str = thing.substr(new_pos);
 			str = str.substr(0, str.find('"'));
-			printf("I need to find %s\n", str.c_str());
+			printf("I need to open %s\n", str.c_str());
 		}
 	}
 	return true;

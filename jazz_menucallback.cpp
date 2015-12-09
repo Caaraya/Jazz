@@ -285,4 +285,76 @@ namespace Jazz
 			break;
 		}
 	}
+	void JazzIDE::AddFileToNotebook(const Glib::ustring&, std::function<void(int)>)
+	{
+		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		
+		// Pear down the name to just the short version of the filename eg. this.txt
+		std::string shortname = "";
+		std::string title = filename;
+		if(title.find("/")!=std::string::npos)
+			shortname = title.substr(title.find_last_of("/")+1);
+		else
+			shortname = title;
+
+		// Create a new source view that is scrolled, then get the buffer
+		SourceView* source_view = Gtk::manage(new SourceView);
+		
+		GtkSourceBuffer* buff = source_view->get_buffer(); //sourceview.get_buffer();
+
+		// Create a new tab label (box containing label and button) contains a
+		// reference to the child the notebook has for it
+		TabLabel* tablabel = Gtk::manage(new TabLabel(shortname, *source_view));
+
+		// Add the two objects to the notebook
+		notebook.append_page(*source_view, *tablabel);
+		
+		// ----------------------------------------------------------
+		// Open the file and load it with the sourcefileloader object
+		// ----------------------------------------------------------
+		GFile* new_file = g_file_new_for_path(filename);
+		GtkSourceFile* new_source_file = gtk_source_file_new();
+	
+		gtk_source_file_set_location(new_source_file, new_file);
+	
+		GtkSourceFileLoader* loader = gtk_source_file_loader_new(
+			buff, new_source_file);
+		
+		// Launch an async call to load the buffer with the contents of the file
+		gtk_source_file_loader_load_async(
+		loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+		// Function to 'finish' the loading routine
+		[](GObject* source_obj, GAsyncResult* res, gpointer loader) -> void {
+			GError* error = nullptr;
+			gboolean success = gtk_source_file_loader_load_finish(
+				(GtkSourceFileLoader*)loader, res, &error);
+			if(success)
+			{
+				puts("Successfully opened file");
+				// Switch the the newly opened page
+				notebook.set_current_page(-1);
+			}
+			else
+				printf("Failed to open file: %i, %s\n",
+					error->code,error->message);
+			}, 
+			// Pass the loader as the user data, so that we can just keep
+			// the lambda function as is
+			(gpointer)loader);
+
+		// Set the language of the source buffer for syntax highlighting
+		auto s_lang = gtk_source_language_manager_guess_language(
+			language_manager,
+			filename,
+			nullptr);
+			
+		gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buff), s_lang);
+		
+		// Free certain resources
+		g_free( filename );
+		g_object_unref(new_file);
+		
+		//Set the font of the newly opened page
+		SetNewPageFont();
+	}
 }

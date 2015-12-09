@@ -30,12 +30,16 @@ namespace Jazz
 	private:
         TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
+		// Menu callbacks
 		void NewFile();
 		void NewProject();
 		void SaveFile();
 		void SaveFileAs();
 		void OpenFile();
         void OpenProject();
+		// String filename
+		// Call back with an int representing the new tab
+		void AddFileToNotebook(const Glib::ustring&, std::function<void()>);
 		void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
 		void Quit();
 		void ChooseFont();
