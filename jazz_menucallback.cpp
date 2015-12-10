@@ -287,8 +287,7 @@ namespace Jazz
 	}
 	void JazzIDE::AddFileToNotebook(const Glib::ustring&, std::function<void(int)> callback)
 	{
-		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		
+		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));		
 		// Pear down the name to just the short version of the filename eg. this.txt
 		std::string shortname = "";
 		std::string title = filename;
