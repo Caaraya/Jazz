@@ -39,7 +39,7 @@ namespace Jazz
         void OpenProject();
 		// String filename
 		// Call back with an int representing the new tab
-		void AddFileToNotebook(const Glib::ustring&, std::function<void()>);
+		void AddFileToNotebook(const Glib::ustring&, std::function<void(bool)>);
 		void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
 		void Quit();
 		void ChooseFont();

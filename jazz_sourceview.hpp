@@ -7,6 +7,7 @@ namespace Jazz
 	{
 	public:
 		SourceView();
+		SourceView(GtkSourceBuffer*);
 		~SourceView();
 		GtkSourceView* get_sourceview() const;
 		GtkSourceBuffer* get_buffer() const;
