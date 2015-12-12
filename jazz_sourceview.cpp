@@ -35,11 +35,11 @@ namespace Jazz
 		g_object_unref(completion_words);
 	}
 	
-	GtkSourceBuffer* SourceView::get_buffer() const
+	GtkSourceBuffer* SourceView::GetSourceBuffer() const
 	{
 		return GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
 	}
-	GtkSourceView* SourceView::get_sourceview() const
+	GtkSourceView* SourceView::GetSourceView() const
 	{
 		return source_view;
 	}

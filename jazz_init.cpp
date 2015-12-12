@@ -128,6 +128,21 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			auto str = thing.substr(new_pos);
 			str = str.substr(0, str.find('"'));
 			printf("I need to open %s\n", str.c_str());
+			
+			AddFileToNotebook(str, [this](bool success){
+				if(success)
+				{
+					puts("Breakpoint hit and we opened a file");
+					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
+					GtkSourceView* source_view = page->GetSourceView();
+					GtkSourceBuffer* source_buffer = page->GetSourceBuffer();
+				}
+				else
+				{
+					// In the future we should use lib notify to inform the user that this operation didn't work
+					puts("Breakpoint hit but we didn't open the file successfully");
+				}
+			});
 		}
 	}
 	return true;

@@ -9,8 +9,8 @@ namespace Jazz
 		SourceView();
 		SourceView(GtkSourceBuffer*);
 		~SourceView();
-		GtkSourceView* get_sourceview() const;
-		GtkSourceBuffer* get_buffer() const;
+		GtkSourceView* GetSourceView() const;
+		GtkSourceBuffer* GetSourceBuffer() const;
 	private:
 		GtkSourceView* source_view = nullptr;
 		GtkSourceCompletion* completion = nullptr;
