@@ -117,6 +117,11 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 		std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
 	}
 }
+void OnShow(GtkTextView* view, GdkRectangle*, gpointer user_data)
+{
+	GtkTextIter iter = ((SourceView*)user_data)->GetTextIterAtLine(31);
+	gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(((SourceView*)user_data)->GetSourceView()), &iter, 0.0, FALSE, 1.0, 1.0);
+}
 bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 {
 	if(thing[0] == '*')
@@ -127,21 +132,24 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			auto new_pos = thing.rfind("fullname=")+10U;
 			auto str = thing.substr(new_pos);
 			str = str.substr(0, str.find('"'));
-			printf("I need to open %s\n", str.c_str());
 			
 			AddFileToNotebook(str, [this](bool success){
 				if(success)
 				{
 					puts("Breakpoint hit and we opened a file");
-					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
-					//GtkSourceView* source_view = page->GetSourceView();
-					GtkTextIter iter = page->GetTextIterAtLine(32);
-					GtkSourceBuffer* source_buffer = page->GetSourceBuffer();
-					GtkSourceMark* mark = gtk_source_buffer_create_source_mark(source_buffer,
-						"gdb_activated", "break", &iter);
-					gtk_text_view_scroll_mark_onscreen(
-						GTK_TEXT_VIEW(page->GetSourceView()),
-						GTK_TEXT_MARK(mark));
+					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));					
+					/*g_signal_connect(GTK_WIDGET(page->GetSourceView()), "show", G_CALLBACK([](GtkWidget* sview, gpointer data){
+						GtkTextView* view = GTK_TEXT_VIEW(sview);
+						GtkTextIter iter = ((SorceView*)data)->GetTextIterAtLine(31);
+						gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(page->GetSourceView()), &iter, 0.0, FALSE, 1.0, 1.0);
+					}), (gpointer)page);*/
+					g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate", G_CALLBACK(OnShow), (gpointer)page);
+					
+					//GtkTextIter iter = page->GetTextIterAtLine(31);
+					//GtkSourceBuffer* source_buffer = page->GetSourceBuffer();
+					//GtkSourceMark* mark = gtk_source_buffer_create_source_mark(source_buffer, "gdb_activated", "break", &iter);
+					//gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(page->GetSourceView()), GTK_TEXT_MARK(mark), 0.0, FALSE, 0.0, 0.0);
+					//gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(page->GetSourceView()), &iter, 0.0, FALSE, 1.0, 1.0);
 				}
 				else
 				{

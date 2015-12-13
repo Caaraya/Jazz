@@ -291,12 +291,11 @@ namespace Jazz
 			std::function<void()> set_new_page_font;
 		};
 		
-		load_async_finish_data* finish_data = new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)};
+		//load_async_finish_data* finish_data = new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)};
 		// Launch an async call to load the buffer with the contents of the file
 		gtk_source_file_loader_load_async(loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL,
 		// Function to finish the loading routine
 		[](GObject* source_obj, GAsyncResult* res, gpointer input_data) -> void {
-			puts("WOOWEEWOOWEEZOWEEE WE'RE IN THE CALLBACK");
 			GError* error = nullptr;
 			load_async_finish_data* final_data = static_cast<load_async_finish_data*>(input_data);
 			gboolean success = gtk_source_file_loader_load_finish(final_data->loader, res, &error);
@@ -342,6 +341,6 @@ namespace Jazz
 		}, 
 		// Pass the loader as the user data, so that we can just keep
 		// the lambda function as is
-		(gpointer)finish_data);
+		(gpointer)new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)}); //finish_data);
 	}
 }

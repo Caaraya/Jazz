@@ -56,7 +56,9 @@ namespace Jazz
 	void GdbInstance::Command(const std::string& command)
 	{
 		auto cmd=command+'\n';
-		write(_gdb_in, cmd.c_str(), cmd.size());
+		int wrote = write(_gdb_in, cmd.c_str(), cmd.size());
+		if(wrote == 0)
+			printf("Failed to write command: %s to gdb\n", command.c_str());
 	}
 	bool GdbInstance::HandleOutput(Glib::IOCondition cond, Glib::RefPtr<Glib::IOChannel> ch)
 	{
