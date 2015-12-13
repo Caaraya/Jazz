@@ -134,8 +134,14 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 				{
 					puts("Breakpoint hit and we opened a file");
 					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
-					GtkSourceView* source_view = page->GetSourceView();
+					//GtkSourceView* source_view = page->GetSourceView();
+					GtkTextIter iter = page->GetTextIterAtLine(32);
 					GtkSourceBuffer* source_buffer = page->GetSourceBuffer();
+					GtkSourceMark* mark = gtk_source_buffer_create_source_mark(source_buffer,
+						"gdb_activated", "break", &iter);
+					gtk_text_view_scroll_mark_onscreen(
+						GTK_TEXT_VIEW(page->GetSourceView()),
+						GTK_TEXT_MARK(mark));
 				}
 				else
 				{

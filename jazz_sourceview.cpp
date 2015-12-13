@@ -15,6 +15,8 @@ namespace Jazz
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
 		
+		ShowLineNumbers(true);
+		
 		show_all();
 	}
 	SourceView::SourceView(GtkSourceBuffer* source_buffer):
@@ -27,6 +29,8 @@ namespace Jazz
 		gtk_source_completion_words_register(completion_words, gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
+			
+		ShowLineNumbers(true);
 		
 		show_all();
 	}
@@ -42,5 +46,14 @@ namespace Jazz
 	GtkSourceView* SourceView::GetSourceView() const
 	{
 		return source_view;
+	}
+	GtkTextIter SourceView::GetTextIterAtLine(const int num)
+	{
+		GtkTextIter iter;
+		gtk_text_buffer_get_iter_at_line(
+			GTK_TEXT_BUFFER(GetSourceBuffer()),
+			&iter, num
+		);
+		return iter;
 	}
 }

@@ -18,7 +18,7 @@ namespace Jazz
 	private:
 		Gtk::Button close_button;
 		Gtk::Label	text_label;
-		Gtk::Widget*child_ref;
+		Gtk::Widget*  child_ref;
 		Glib::ustring full_path;
 	private:
 		void Close();
