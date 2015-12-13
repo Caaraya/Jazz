@@ -12,6 +12,7 @@ namespace Jazz
 		GtkSourceView* GetSourceView() const;
 		GtkSourceBuffer* GetSourceBuffer() const;
 		GtkTextIter GetTextIterAtLine(const int);
+		void ScrollToLine(int);
 		void ShowLineNumbers(bool show)
 		{
 			gtk_source_view_set_show_line_numbers(source_view, static_cast<gboolean>(show));

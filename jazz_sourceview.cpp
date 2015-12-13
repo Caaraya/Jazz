@@ -56,4 +56,9 @@ namespace Jazz
 		);
 		return iter;
 	}
+	void SourceView::ScrollToLine(int line)
+	{
+		GtkTextIter iter = GetTextIterAtLine(line);
+		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(GetSourceView()), &iter, 0.0, FALSE, 1.0, 1.0);
+	}
 }
