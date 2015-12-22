@@ -22,6 +22,7 @@ namespace Jazz
 		void NewFile();
 		void SaveFile();
 		void OpenFile();
+      void OpenProject();
 		void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
 		void Quit();
 		void ChooseFont();
