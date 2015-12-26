@@ -1,6 +1,3 @@
-# Select executable sufffix here
-EXE_SFX=.app
-
 # Select compiler here:
 CXX=g++
 
@@ -12,7 +9,7 @@ LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0`
 
 all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
 		 jazz_filetree.o
-	$(CXX) $^ $(LDFLAGS) -o bin/jazz$(EXE_SFX)
+	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
 jazz.o: jazz.cpp
 	$(CXX) $(CFLAGS) jazz.cpp

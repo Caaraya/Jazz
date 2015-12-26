@@ -17,6 +17,7 @@ namespace Jazz
 		Gtk::Notebook notebook;
 		Gtk::MenuBar*	menubar;
 		Gtk::Toolbar*	toolbar;
+      Glib::RefPtr<Gtk::Builder> builder;
 		FileTree file_tree;
 	private:
 		void NewFile();

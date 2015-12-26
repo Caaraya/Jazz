@@ -55,6 +55,14 @@
               </object>
             </child>
             <child>
+              <object class="GtkMenuItem" id="filemenuopen">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Open</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkMenuItem" id="filemenusave">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
