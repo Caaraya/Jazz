@@ -14,7 +14,7 @@ namespace Jazz
 	class FileTree : public Gtk::ScrolledWindow
 	{
 	public:
-		FileTree(const std::string& path);
+		FileTree(const Glib::ustring& path);
 		Gtk::TreeView& TreeView()
 		{
 			return tree_view;
@@ -33,7 +33,7 @@ namespace Jazz
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;
 		FileTreeModelColumns column;
-		std::string path;
+      Glib::ustring path;
 		Glib::RefPtr<Gio::Cancellable> cancellation_token;
 	};
 }

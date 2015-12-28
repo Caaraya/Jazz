@@ -1,7 +1,8 @@
 #include <gtkmm.h>
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
-
+#include "jazz_projecttree.hpp"
+#include "coralscript/include/jsonparse.hh"
 typedef struct WrenVM WrenVM;
 
 namespace Jazz
@@ -15,10 +16,13 @@ namespace Jazz
 		Gtk::Box			box;
 		Gtk::Box			h_box;
 		Gtk::Notebook notebook;
+      Gtk::Notebook right_pane;
 		Gtk::MenuBar*	menubar;
 		Gtk::Toolbar*	toolbar;
       Glib::RefPtr<Gtk::Builder> builder;
 		FileTree file_tree;
+		coral::zircon::object project_doc;
+      ProjectTreeView project_tree;
 	private:
 		void NewFile();
 		void SaveFile();

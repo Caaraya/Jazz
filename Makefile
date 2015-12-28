@@ -2,13 +2,13 @@
 CXX=g++
 
 # Select compilation flags here:
-CFLAGS=-std=c++14 -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
+CFLAGS=-std=c++14 -Os -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
 # Select linker flags here:
-LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0`
+LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./coralscript/bin -lcoral
 
 all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
-		 jazz_filetree.o
+		 jazz_filetree.o jazz_projecttree.o
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
 jazz.o: jazz.cpp
@@ -25,9 +25,12 @@ jazz_sourceview.o: jazz_sourceview.cpp
 	
 jazz_menucallback.o: jazz_menucallback.cpp
 	$(CXX) $(CFLAGS) jazz_menucallback.cpp
-	
+
 jazz_filetree.o: jazz_filetree.cpp
 	$(CXX) $(CFLAGS) jazz_filetree.cpp
+
+jazz_projecttree.o: jazz_projecttree.cpp
+	$(CXX) $(CFLAGS) jazz_projecttree.cpp
 
 clean:
 	rm -f *.o

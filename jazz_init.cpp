@@ -9,21 +9,25 @@ namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
+   project_tree(),
 	language_manager(gtk_source_language_manager_get_default())
 {
    builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
    builder->get_widget("jazz_menubar", menubar);
    menubar->show();
    
-	set_default_size(600, 500);
+	set_default_size(800, 600);
 	
 	add(box);
 	box.pack_end(h_box, true, true);
 	
-	h_box.pack_end(file_tree, false, false);
-	file_tree.set_size_request(150);
-	h_box.pack_end(notebook, true, true);
+	right_pane.set_tab_pos(Gtk::PositionType::POS_BOTTOM);
+   right_pane.append_page(project_tree, *Gtk::manage(new Gtk::Label("Project")));
+   right_pane.append_page(file_tree, *Gtk::manage(new Gtk::Label("File")));
 	
+   h_box.pack_end(right_pane, false, false);
+   h_box.pack_end(notebook, true, true);
+   
 	GtkWidget* tool_bar = gtk_toolbar_new();
 	
 	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
