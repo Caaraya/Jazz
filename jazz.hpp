@@ -25,6 +25,7 @@ namespace Jazz
       ProjectTreeView project_tree;
 	private:
 		void NewFile();
+		void NewProject();
 		void SaveFile();
 		void OpenFile();
       void OpenProject();

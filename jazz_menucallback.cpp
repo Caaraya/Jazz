@@ -213,4 +213,11 @@ namespace Jazz
 			}
 		}				
 	}
+	void JazzIDE::NewProject()
+	{
+		Gtk::Dialog* project_dialog = nullptr;
+		builder->get_widget("new_proj_dialog", project_dialog);
+		
+		int response = project_dialog->run();
+	}
 }

@@ -15,6 +15,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	language_manager(gtk_source_language_manager_get_default())
 {
    builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
+	builder->add_from_file("jazz_project_dialog.ui");
    builder->get_widget("jazz_menubar", menubar);
    menubar->show();
    
@@ -59,6 +60,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
    
    builder->get_widget("filemenunewfile", menu_item);
    menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
+	
+	builder->get_widget("filemenunewproject", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewProject));
    
    builder->get_widget("filemenuopen", menu_item);
    menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
