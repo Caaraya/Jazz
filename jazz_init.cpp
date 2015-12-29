@@ -5,11 +5,13 @@
 #include "jazz_filetree.hpp"
 #include <iostream>
 
+using coral::zircon::json_loadfile;
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
-   project_tree(),
+   project_doc(json_loadfile("bin/test.jazzproj")),
+	project_tree(),
 	language_manager(gtk_source_language_manager_get_default())
 {
    builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
@@ -86,6 +88,8 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	save_bttn_wrapper->set_tooltip_text("Save As");
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
+	
+	project_tree.SetProject(project_doc);
 	
 	show_all_children();
 }
