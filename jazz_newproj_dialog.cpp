@@ -1,4 +1,5 @@
 #include "jazz_newproj_dialog.hpp"
+#include "jazz_msgbox.hpp"
 
 namespace Jazz
 {
@@ -27,20 +28,20 @@ namespace Jazz
 		Glib::ustring text = name_entry->get_text();
 		if(text.empty())
 		{
-			// Alert the user that the project must contain a name
+			ShowMessage("Project name must not be empty");
 			return;
 		}
 		
 		text = directory_entry->get_text();
 		if(text.empty())
 		{
-			// Alert the user that they have to choose a valid directory
+			ShowMessage("Project location must not be empty");
 			return;
 		}
 		
 		if(compiler_selection->get_active_row_number() == -1)
 		{
-			// Alert the user that they have to choose a compiler
+			ShowMessage("A primary compiler must be selected");
 			return;
 		}
 		
