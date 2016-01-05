@@ -1,6 +1,8 @@
 #include "jazz_newproj_dialog.hpp"
 #include "jazz_msgbox.hpp"
+#include "coralscript/include/jsonparse.hh"
 
+#include <iostream>
 namespace Jazz
 {
 	NewProjectDialog::NewProjectDialog(GtkDialog* dialog, const Glib::RefPtr<Gtk::Builder>& builder):
@@ -25,15 +27,15 @@ namespace Jazz
 	void NewProjectDialog::OnOkClicked()
 	{
 		// Validate the input to the project
-		Glib::ustring text = name_entry->get_text();
-		if(text.empty())
+		Glib::ustring proj_name = name_entry->get_text();
+		if(proj_name.empty())
 		{
 			ShowMessage("Project name must not be empty");
 			return;
 		}
 		
-		text = directory_entry->get_text();
-		if(text.empty())
+		Glib::ustring directory_name = directory_entry->get_text();
+		if(directory_name.empty())
 		{
 			ShowMessage("Project location must not be empty");
 			return;
@@ -44,6 +46,20 @@ namespace Jazz
 			ShowMessage("A primary compiler must be selected");
 			return;
 		}
+		Glib::ustring compiler_name = compiler_selection->get_active_text();
+		
+		std::cout << proj_name << " " << directory_name << std::endl;
+		
+		using namespace coral::zircon;
+		
+		object document = table();
+		document["project_name"] = std::string(proj_name);
+		document["compiler"] = table();
+		document["compiler"]["command"] = std::string(compiler_name);
+		document["compiler"]["options"] = std::string("-std=c++14 -c -Os");
+		document["linker"]["command"] = std::string(compiler_name);
+		
+		json_savetofile(document, directory_name+"\\"+proj_name);
 		
 		puts(compiler_selection->get_active_text().c_str());
 		response(0);
