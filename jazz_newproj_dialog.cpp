@@ -57,9 +57,10 @@ namespace Jazz
 		document["compiler"] = table();
 		document["compiler"]["command"] = std::string(compiler_name);
 		document["compiler"]["options"] = std::string("-std=c++14 -c -Os");
+		document["linker"] = table();
 		document["linker"]["command"] = std::string(compiler_name);
 		
-		json_savetofile(document, directory_name+"\\"+proj_name);
+		json_savetofile(document, directory_name+"\\"+proj_name+".jazzproj");
 		
 		puts(compiler_selection->get_active_text().c_str());
 		response(0);
