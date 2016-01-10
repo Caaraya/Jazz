@@ -60,7 +60,7 @@ namespace Jazz
 		document["linker"] = table();
 		document["linker"]["command"] = std::string(compiler_name);
 		
-		json_savetofile(document, directory_name+"\\"+proj_name+".jazzproj");
+		json_savetofile(document, directory_name+"/"+proj_name+".jazzproj");
 		
 		puts(compiler_selection->get_active_text().c_str());
 		response(0);
