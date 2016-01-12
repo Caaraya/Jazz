@@ -219,6 +219,7 @@ namespace Jazz
 		NewProjectDialog* project_dialog = nullptr;
 		builder->get_widget_derived("new_proj_dialog", project_dialog);
 		project_dialog->set_transient_for(*this);
+		
 		int response = project_dialog->run();
 		
 		switch(response)
