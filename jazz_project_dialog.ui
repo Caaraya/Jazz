@@ -89,9 +89,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="directory_entry">
+              <object class="GtkFileChooserButton" id="directory_entry">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
+                <property name="action">select-folder</property>
+                <property name="title" translatable="yes"/>
+                <property name="width_chars">1</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -107,19 +110,6 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkFileChooserButton" id="file_chooser_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="action">select-folder</property>
-                <property name="title" translatable="yes"/>
-                <property name="width_chars">1</property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
               </packing>
             </child>
             <child>
@@ -161,6 +151,22 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="create_proj_dir_check">
+                <property name="label" translatable="yes">Create Directory</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Create directory for project</property>
+                <property name="xalign">0</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">1</property>
               </packing>
             </child>
             <child>

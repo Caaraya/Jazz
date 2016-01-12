@@ -13,7 +13,8 @@ namespace Jazz
 		void OnCancelClicked();
 	private:
 		Gtk::Entry* name_entry = nullptr;
-		Gtk::Entry* directory_entry = nullptr;
+		Gtk::FileChooserButton* directory_entry = nullptr;
 		Gtk::ComboBoxText* compiler_selection = nullptr;
+		Gtk::CheckButton* create_proj_dir = nullptr;
 	};
 }

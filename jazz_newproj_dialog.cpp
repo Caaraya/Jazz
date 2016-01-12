@@ -18,6 +18,7 @@ namespace Jazz
 		
 		builder->get_widget("name_entry", name_entry);
 		builder->get_widget("directory_entry", directory_entry);
+		builder->get_widget("create_proj_dir_check", create_proj_dir);
 		
 		builder->get_widget("compiler_selection", compiler_selection);
 	}
@@ -34,8 +35,8 @@ namespace Jazz
 			return;
 		}
 		
-		Glib::ustring directory_name = directory_entry->get_text();
-		if(directory_name.empty())
+		Glib::ustring directory_path = directory_entry->get_filename();
+		if(directory_path.empty())
 		{
 			ShowMessage("Project location must not be empty");
 			return;
@@ -48,7 +49,7 @@ namespace Jazz
 		}
 		Glib::ustring compiler_name = compiler_selection->get_active_text();
 		
-		std::cout << proj_name << " " << directory_name << std::endl;
+		std::cout << proj_name << " " << directory_path << std::endl;
 		
 		using namespace coral::zircon;
 		
@@ -60,7 +61,15 @@ namespace Jazz
 		document["linker"] = table();
 		document["linker"]["command"] = std::string(compiler_name);
 		
-		json_savetofile(document, directory_name+"/"+proj_name+".jazzproj");
+		if(create_proj_dir->get_active())
+		{
+			directory_path+="/"+proj_name;
+			Glib::RefPtr<Gio::File> dir = Gio::File::create_for_path(directory_path);
+			if(!dir->query_exists())
+				dir->make_directory();
+		}
+		
+		json_savetofile(document, directory_path+"/"+proj_name+".jazzproj");
 		
 		puts(compiler_selection->get_active_text().c_str());
 		response(0);
