@@ -80,10 +80,19 @@ namespace Jazz
 		puts(compiler_selection->get_active_text().c_str());
 		response(0);
 		hide();
+		
+		ResetView();
 	}
 	void NewProjectDialog::OnCancelClicked()
 	{
 		response(-1);
 		hide();
+		
+		ResetView();
+	}
+	void NewProjectDialog::ResetView()
+	{
+		name_entry->set_text("");
+		create_proj_dir->set_active(true);
 	}
 }

@@ -13,6 +13,8 @@ namespace Jazz
 		void OnCancelClicked();
 		coral::zircon::object GetProject();
 	private:
+		void ResetView();
+	private:
 		coral::zircon::object project_document;
 		Gtk::Entry* name_entry = nullptr;
 		Gtk::FileChooserButton* directory_entry = nullptr;
