@@ -5,34 +5,33 @@
 #include "jazz_filetree.hpp"
 #include <iostream>
 
+using coral::zircon::json_loadfile;
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
+   project_doc(json_loadfile("bin/test.jazzproj")),
+	project_tree(),
 	language_manager(gtk_source_language_manager_get_default())
 {
-	set_default_size(600, 500);
+   builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
+	builder->add_from_file("jazz_project_dialog.ui");
+   builder->get_widget("jazz_menubar", menubar);
+   menubar->show();
+   
+	set_default_size(800, 600);
 	
 	add(box);
 	box.pack_end(h_box, true, true);
 	
-	h_box.pack_end(file_tree, false, false);
-	file_tree.set_size_request(150);
-	h_box.pack_end(notebook, true, true);
-
-	GtkWidget* menu_bar = gtk_menu_bar_new();
-	GtkWidget* file_menu = gtk_menu_new();
-	GtkWidget* edit_menu = gtk_menu_new();
+	right_pane.set_tab_pos(Gtk::PositionType::POS_BOTTOM);
+   right_pane.append_page(project_tree, *Gtk::manage(new Gtk::Label("Project")));
+   right_pane.append_page(file_tree, *Gtk::manage(new Gtk::Label("File")));
 	
+   h_box.pack_end(right_pane, false, false);
+   h_box.pack_end(notebook, true, true);
+   
 	GtkWidget* tool_bar = gtk_toolbar_new();
-	
-	GtkWidget* new_item = gtk_menu_item_new_with_label("New");
-	GtkWidget* open_item = gtk_menu_item_new_with_label("Open");
-	GtkWidget* save_item = gtk_menu_item_new_with_label("Save");
-	GtkWidget* quit_item = gtk_menu_item_new_with_label("Quit");
-	GtkWidget* file_item = gtk_menu_item_new_with_label("File");
-	GtkWidget* font_item = gtk_menu_item_new_with_label("Font");
-	GtkWidget* edit_item = gtk_menu_item_new_with_label("Edit");
 	
 	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
 	GtkToolItem* open_button = gtk_tool_button_new(nullptr, nullptr);
@@ -46,49 +45,39 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	GtkToolItem* seperator = gtk_separator_tool_item_new();
 	
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), new_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(edit_menu), font_item);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), edit_item);
-	
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_item), file_menu);
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(edit_item), edit_menu);
-	
 	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), new_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), open_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), save_button, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), seperator, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), compile_button, -1);
 	
-	gtk_widget_show(menu_bar);
-	gtk_widget_show(file_item);
-	
-	menubar = static_cast<Gtk::MenuBar *>(Glib::wrap(menu_bar));
 	toolbar = static_cast<Gtk::Toolbar *>(Glib::wrap(tool_bar));
 	
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
-
-	puts("Success constructor");
-	
 	// Connect the new menu button to our member function for it
-	Gtk::MenuItem* new_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(new_item));
-	new_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
+   Gtk::MenuItem* menu_item = nullptr;
+   
+   builder->get_widget("filemenunewfile", menu_item);
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
 	
-	Gtk::MenuItem* open_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(open_item));
-	open_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+	builder->get_widget("filemenunewproject", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewProject));
+   
+   builder->get_widget("filemenuopen", menu_item);
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+   
+   builder->get_widget("filemenusave", menu_item);
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+   
+   builder->get_widget("filemenusaveas", menu_item);
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+   
+   builder->get_widget("filemenuexit", menu_item);
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::Quit));
 	
-	Gtk::MenuItem* save_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(save_item));
-	save_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
-	
-	Gtk::MenuItem* font_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(font_item));
-	font_item_wrapper->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::ChooseFont));
-	
-	Gtk::MenuItem* quit_item_wrapper = static_cast<Gtk::MenuItem*>(Glib::wrap(quit_item));
-	quit_item_wrapper->signal_activate().connect(sigc::mem_fun(*this, &JazzIDE::Quit));
+	builder->get_widget("editmenufont", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::ChooseFont));
 
 	Gtk::ToolButton* new_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(new_button));
 	new_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
@@ -103,6 +92,8 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	save_bttn_wrapper->set_tooltip_text("Save As");
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
+	
+	project_tree.SetProject(project_doc);
 	
 	show_all_children();
 }

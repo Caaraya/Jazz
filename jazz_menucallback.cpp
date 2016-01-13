@@ -1,6 +1,7 @@
 #include "jazz.hpp"
 #include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
+#include "jazz_newproj_dialog.hpp"
 #include <gtksourceview/gtksource.h>
 
 namespace Jazz
@@ -212,5 +213,23 @@ namespace Jazz
 				cur_page->override_font(Pango::FontDescription(font_name));
 			}
 		}				
+	}
+	void JazzIDE::NewProject()
+	{
+		NewProjectDialog* project_dialog = nullptr;
+		builder->get_widget_derived("new_proj_dialog", project_dialog);
+		project_dialog->set_transient_for(*this);
+		
+		int response = project_dialog->run();
+		
+		switch(response)
+		{
+		case 0: // Project settings made
+			puts("Project configuration created");
+			break;
+		case -1: // Cancel
+			puts("New project canceled");
+			break;
+		}
 	}
 }

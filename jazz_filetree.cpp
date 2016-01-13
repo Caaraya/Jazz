@@ -4,7 +4,7 @@
 
 namespace Jazz
 {
-	FileTree::FileTree(const std::string& path):tree_store(),
+	FileTree::FileTree(const Glib::ustring& path):tree_store(),
 		cancellation_token(Gio::Cancellable::create())
 	{
 		add(tree_view);
@@ -24,7 +24,6 @@ namespace Jazz
 		
 		
 		DrawTree(path, row);
-		//tree_view.signal_row_activated().connect(sigc::mem_fun(*this, &FileTree::OpenSelected) );
 	}
 	void FileTree::DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent)
 	{

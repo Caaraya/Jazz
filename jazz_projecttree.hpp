@@ -1,25 +1,25 @@
 #pragma once
 #include <gtkmm.h>
-#include <string>
-
+#include "coralscript/include/jsonparse.hh"
 namespace Jazz
 {
-	class FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
-	{
-		public:
-		FileTreeModelColumns()
-		{add(filename);}
-		Gtk::TreeModelColumn<Glib::ustring> filename;
-	};
-	class FileTree : public Gtk::ScrolledWindow
+	class ProjectTreeModelColumns : public Gtk::TreeModel::ColumnRecord
 	{
 	public:
-		FileTree(const Glib::ustring& path);
+		ProjectTreeModelColumns();
+		Gtk::TreeModelColumn<Glib::ustring> filename;
+	};
+	class ProjectTreeView : public Gtk::ScrolledWindow
+	{
+	public:
+		ProjectTreeView();
+		ProjectTreeView(coral::zircon::object&);
+		void SetProject(coral::zircon::object&);
 		Gtk::TreeView& TreeView()
 		{
 			return tree_view;
 		}
-		FileTreeModelColumns& Columns()
+		ProjectTreeModelColumns& Columns()
 		{
 			return column;
 		}
@@ -28,12 +28,10 @@ namespace Jazz
 			return tree_store;
 		}
 	private:
-		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
-	private:
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;
-		FileTreeModelColumns column;
-      Glib::ustring path;
+		ProjectTreeModelColumns column;
+		Glib::ustring path;
 		Glib::RefPtr<Gio::Cancellable> cancellation_token;
 	};
 }
