@@ -16,6 +16,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 {
    builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
 	builder->add_from_file("jazz_project_dialog.ui");
+	builder->add_from_file("jazz_toolbar.ui");
    builder->get_widget("jazz_menubar", menubar);
    menubar->show();
    
@@ -30,28 +31,24 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
    h_box.pack_end(right_pane, false, false);
    h_box.pack_end(notebook, true, true);
-   
-	GtkWidget* tool_bar = gtk_toolbar_new();
 	
-	GtkToolItem* new_button = gtk_tool_button_new(nullptr, nullptr);
-	GtkToolItem* open_button = gtk_tool_button_new(nullptr, nullptr);
-	GtkToolItem* save_button = gtk_tool_button_new(nullptr, nullptr);
-	GtkToolItem* compile_button = gtk_tool_button_new(nullptr, nullptr);
+	Gtk::ToolButton* titem = nullptr;
 	
-	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(new_button), "document-new");
-	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(open_button), "document-open");
-	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(save_button), "document-save");
-	gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(compile_button), "system-run");
+	builder->get_widget("tb_newfile", titem);
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::NewFile));
 	
-	GtkToolItem* seperator = gtk_separator_tool_item_new();
+	builder->get_widget("tb_openfile", titem);
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::OpenFile));
+	titem->set_tooltip_text("Open File");
 	
-	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), new_button, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), open_button, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), save_button, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), seperator, -1);
-	gtk_toolbar_insert(GTK_TOOLBAR(tool_bar), compile_button, -1);
+	builder->get_widget("tb_savefile", titem);
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::SaveFile));
+	titem->set_tooltip_text("Save As");
 	
-	toolbar = static_cast<Gtk::Toolbar *>(Glib::wrap(tool_bar));
+	builder->get_widget("tb_execute", titem);
+	titem->signal_clicked().connect(sigc::mem_fun(*this, JazzIDE::ExecuteProject));
+	
+	builder->get_widget("jazz_toolbar", toolbar);
 	
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
@@ -78,18 +75,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	builder->get_widget("editmenufont", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::ChooseFont));
-
-	Gtk::ToolButton* new_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(new_button));
-	new_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
-	new_bttn_wrapper->set_tooltip_text("New File");
-	
-	Gtk::ToolButton* open_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(open_button));
-	open_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
-	open_bttn_wrapper->set_tooltip_text("Open File");
-	
-	Gtk::ToolButton* save_bttn_wrapper = static_cast<Gtk::ToolButton*>(Glib::wrap(save_button));
-	save_bttn_wrapper->signal_clicked().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
-	save_bttn_wrapper->set_tooltip_text("Save As");
 	
 	file_tree.TreeView().signal_row_activated().connect(sigc::mem_fun(*this, &JazzIDE::OpenFileFromTree));
 
