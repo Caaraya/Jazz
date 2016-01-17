@@ -46,7 +46,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->set_tooltip_text("Save As");
 	
 	builder->get_widget("tb_execute", titem);
-	titem->signal_clicked().connect(sigc::mem_fun(*this, JazzIDE::ExecuteProject));
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::ExecuteProject));
 	
 	builder->get_widget("jazz_toolbar", toolbar);
 	

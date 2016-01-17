@@ -2,7 +2,7 @@
 
 namespace Jazz
 {
-	void JazzIde::ExecuteProject()
+	void JazzIDE::ExecuteProject()
 	{
 		using namespace coral::zircon;
 		
