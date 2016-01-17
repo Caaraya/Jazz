@@ -54,9 +54,47 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="tooltip_text" translatable="yes">Execute current projects target</property>
-        <property name="label" translatable="yes">toolbutton2</property>
         <property name="use_underline">True</property>
         <property name="stock_id">gtk-execute</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="tb_startdbg">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Run debuggeer on target</property>
+        <property name="use_underline">True</property>
+        <property name="stock_id">gtk-media-record</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="tb_pausedbg">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Pause debugger</property>
+        <property name="use_underline">True</property>
+        <property name="stock_id">gtk-media-pause</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="tb_resumedbg">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Resume debugger</property>
+        <property name="use_underline">True</property>
+        <property name="stock_id">gtk-media-play</property>
       </object>
       <packing>
         <property name="expand">False</property>
