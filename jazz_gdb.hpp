@@ -15,9 +15,14 @@ namespace Jazz
 		// Register a callback object of handler type
 		// Your handler will recieve output line by line
 		void AddOutHandler(HandlerType);
+		bool Ready() const
+		{
+			return ready;
+		}
 	private:
 		bool HandleOutput(Glib::IOCondition, Glib::RefPtr<Glib::IOChannel>);
 	private:
+		bool ready = false;
 		int _gdb_in;
 		int _gdb_out;
 		int _gdb_err;

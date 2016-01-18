@@ -2,11 +2,16 @@
 
 namespace Jazz
 {
-	Terminal::Terminal(): Gtk::TextView(), buffer(get_buffer())
+	Terminal::Terminal(): Gtk::ScrolledWindow(),
+		text_view(Gtk::manage(new Gtk::TextView)),
+		buffer(text_view->get_buffer())
 	{
-		set_editable(false);
-		set_wrap_mode(Gtk::WrapMode::WRAP_CHAR);
-		set_monospace(true);
+		text_view->set_editable(false);
+		text_view->set_wrap_mode(Gtk::WrapMode::WRAP_CHAR);
+		text_view->set_monospace(true);
+		
+		add(*text_view);
+		show_all();
 	}
 	void Terminal::Update()
 	{

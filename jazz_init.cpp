@@ -84,10 +84,13 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	using std::placeholders::_1;
 	using std::placeholders::_2;
-	gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
-	gdb->Command("h");
-	gdb->Command("b gdb_test.cpp:9");
-	gdb->Command("r");
+	if(gdb->Ready())
+	{
+		gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
+		gdb->Command("h");
+		gdb->Command("b gdb_test.cpp:9");
+		gdb->Command("r");
+	}
 }
 JazzIDE::~JazzIDE()
 {

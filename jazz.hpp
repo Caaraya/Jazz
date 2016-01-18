@@ -3,7 +3,7 @@
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
 #include "jazz_projecttree.hpp"
-#include  "jazz_tabLabel.hpp"
+#include "jazz_terminal.hpp"
 #include "coralscript/include/jsonparse.hh"
 #include "jazz_watch.hpp"
 #include "jazz_gdb.hpp"
@@ -15,18 +15,17 @@ namespace Jazz
 	public:
 		JazzIDE();
 		~JazzIDE();
-	private:
-		Gtk::Box			box;
-		Gtk::Box			h_box;
+		private:
+		Gtk::Box box;
+		Gtk::Box h_box;
 		Gtk::Notebook notebook;
-      Gtk::Notebook right_pane;
-		Gtk::MenuBar*	menubar;
-		Gtk::Toolbar*	toolbar;
-      Glib::RefPtr<Gtk::Builder> builder;
+		Gtk::Notebook right_pane;
+		Gtk::MenuBar* menubar;
+		Gtk::Toolbar* toolbar;
+		Glib::RefPtr<Gtk::Builder> builder;
 		FileTree file_tree;
 		coral::zircon::object project_doc;
-      ProjectTreeView project_tree;
-		WatchWindow watch_window;
+		ProjectTreeView project_tree;
 	private:
         TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
@@ -40,6 +39,7 @@ namespace Jazz
 		// String filename
 		// Call back with a bool representing success
 		void AddFileToNotebook(const Glib::ustring&, std::function<void(bool)>);
+		void OpenProject();
 		void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
 		void Quit();
 		void ChooseFont();
@@ -49,7 +49,6 @@ namespace Jazz
 		void ExecuteProject();
 	private:
 		GtkSourceLanguageManager* language_manager;
-		
 		GdbInstance* gdb = new GdbInstance("./test");
 	};
 }
