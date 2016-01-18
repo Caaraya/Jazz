@@ -75,6 +75,8 @@ namespace Jazz
 	}
 	void GdbInstance::Command(const std::string& command)
 	{
+		if(!ready)
+			return;
 		auto cmd=command+'\n';
 		int wrote = write(_gdb_in, cmd.c_str(), cmd.size());
 		if(wrote == 0)

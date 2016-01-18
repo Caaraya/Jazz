@@ -1,12 +1,12 @@
+#pragma once
 #include <gtkmm.h>
-
 namespace Jazz
 {
 	class Terminal : public Gtk::ScrolledWindow
 	{
 	public:
 		Terminal();
-		void Update();
+		bool Update(Glib::IOCondition, const Glib::ustring&);
 		void Clear();
 		void AddText(const Glib::ustring&);
 	private:

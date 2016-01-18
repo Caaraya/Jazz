@@ -2,7 +2,8 @@
 
 namespace Jazz
 {
-	Terminal::Terminal(): Gtk::ScrolledWindow(),
+	Terminal::Terminal(): 
+		//Gtk::ScrolledWindow(),
 		text_view(Gtk::manage(new Gtk::TextView)),
 		buffer(text_view->get_buffer())
 	{
@@ -13,12 +14,17 @@ namespace Jazz
 		add(*text_view);
 		show_all();
 	}
-	void Terminal::Update()
+	bool Terminal::Update(Glib::IOCondition, const Glib::ustring& text)
 	{
-		
+		AddText(text);
+		return true;
 	}
 	void Terminal::Clear()
 	{
 		buffer->set_text("");
+	}
+	void Terminal::AddText(const Glib::ustring& text)
+	{
+		buffer->insert_at_cursor(text);
 	}
 }

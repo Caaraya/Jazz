@@ -12,25 +12,27 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
    project_doc(json_loadfile("bin/test.jazzproj")),
 	project_tree(),
+	terminal(),
 	language_manager(gtk_source_language_manager_get_default())
 {
-   builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
+	builder = Gtk::Builder::create_from_file("jazz_menubar.ui");
 	builder->add_from_file("jazz_project_dialog.ui");
 	builder->add_from_file("jazz_toolbar.ui");
-   builder->get_widget("jazz_menubar", menubar);
-   menubar->show();
-   
+	builder->get_widget("jazz_menubar", menubar);
+	menubar->show();
+	
 	set_default_size(800, 600);
 	
 	add(box);
+	box.pack_end(terminal, true, true);
 	box.pack_end(h_box, true, true);
 	
 	right_pane.set_tab_pos(Gtk::PositionType::POS_BOTTOM);
-   right_pane.append_page(project_tree, *Gtk::manage(new Gtk::Label("Project")));
-   right_pane.append_page(file_tree, *Gtk::manage(new Gtk::Label("File")));
+	right_pane.append_page(project_tree, *Gtk::manage(new Gtk::Label("Project")));
+	right_pane.append_page(file_tree, *Gtk::manage(new Gtk::Label("File")));
 	
-   h_box.pack_end(right_pane, false, false);
-   h_box.pack_end(notebook, true, true);
+	h_box.pack_end(right_pane, false, false);
+	h_box.pack_end(notebook, true, true);
 	
 	Gtk::ToolButton* titem = nullptr;
 	
@@ -49,29 +51,29 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::ExecuteProject));
 	
 	builder->get_widget("jazz_toolbar", toolbar);
-	
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
+	
 	// Connect the new menu button to our member function for it
-   Gtk::MenuItem* menu_item = nullptr;
-   
-   builder->get_widget("filemenunewfile", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
+	Gtk::MenuItem* menu_item = nullptr;
+	
+	builder->get_widget("filemenunewfile", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewFile));
 	
 	builder->get_widget("filemenunewproject", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::NewProject));
    
-   builder->get_widget("filemenuopen", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
-   
-   builder->get_widget("filemenusave", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
-   
-   builder->get_widget("filemenusaveas", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFileAs));
-   
-   builder->get_widget("filemenuexit", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::Quit));
+	builder->get_widget("filemenuopen", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+	
+	builder->get_widget("filemenusave", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+	
+	builder->get_widget("filemenusaveas", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+	
+	builder->get_widget("filemenuexit", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::Quit));
 	
 	builder->get_widget("editmenufont", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::ChooseFont));
@@ -84,13 +86,12 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	
 	using std::placeholders::_1;
 	using std::placeholders::_2;
-	if(gdb->Ready())
-	{
-		gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
-		gdb->Command("h");
-		gdb->Command("b gdb_test.cpp:9");
-		gdb->Command("r");
-	}
+
+	gdb->AddOutHandler(std::bind(&Terminal::Update, &terminal, _1, _2));
+	gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
+	gdb->Command("h");
+	gdb->Command("b gdb_test.cpp:9");
+	gdb->Command("r");
 }
 JazzIDE::~JazzIDE()
 {

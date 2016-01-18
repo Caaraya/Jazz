@@ -26,6 +26,7 @@ namespace Jazz
 		FileTree file_tree;
 		coral::zircon::object project_doc;
 		ProjectTreeView project_tree;
+		Terminal terminal;
 	private:
         TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
