@@ -10,7 +10,7 @@ namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
-   project_doc(json_loadfile("bin/test.jazzproj")),
+   project_doc(json_loadfile("test.jazzproj")),
 	project_tree(),
 	terminal(),
 	language_manager(gtk_source_language_manager_get_default())

@@ -1,0 +1,22 @@
+{
+	project_name : "Keith Sutherland",
+	compiler : {
+		command: "g++",
+		options: "-Os -std=c++14"
+	},
+	linker: {
+		command: "g++",
+		options: "-lcoral"
+	},
+   source_files: [
+      "hello.c",
+      "test.cpp",
+      "guy.java",
+      "broson.rb",
+      "radical.py"
+   ],
+	objectfiles: [
+		"*.o",
+		"haha"
+	]
+}
