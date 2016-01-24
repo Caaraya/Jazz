@@ -10,6 +10,8 @@ namespace Jazz
 	public:
 		Gtk::Button& CloseButton();
 		Gtk::Label&	 TextLabel();
+	public:
+		Glib::ustring filename = "";
 	private:
 		Gtk::Button close_button;
 		Gtk::Label	text_label;
