@@ -127,7 +127,9 @@ namespace Jazz
 	}
 	void JazzIDE::SaveFile()
 	{
-		if(!notebook.get_current_page() == -1)
+		int pages = notebook.get_n_pages();
+		
+		if(pages > 0)
 		{
 			Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 			
@@ -177,13 +179,15 @@ namespace Jazz
 					(gpointer)new_srcfile_saver);
 					return;
 			}
-			
-			SaveFileAs();
 		}
+		SaveFileAs();
+		
 	}
 	void JazzIDE::SaveFileAs()
 	{
-		if(!notebook.get_current_page() == -1)
+		int pages = notebook.get_n_pages();
+		
+		if(pages > 0)
 		{
 			Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 			
