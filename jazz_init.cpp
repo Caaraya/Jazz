@@ -71,7 +71,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
    menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
    
    builder->get_widget("filemenusaveas", menu_item);
-   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
+   menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFileAs));
    
    builder->get_widget("filemenuexit", menu_item);
    menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::Quit));

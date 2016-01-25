@@ -127,109 +127,134 @@ namespace Jazz
 	}
 	void JazzIDE::SaveFile()
 	{
-		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
-		
-		Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
-		
-		Gtk::Label* label = static_cast<Gtk::Label*>(box->get_children()[0]);
-		
-		TabLabel* tablabel = static_cast<TabLabel*>(box);
-		
-		if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
-			{
-				page = scrld->get_child();
-				puts("Scrolled Window");
-				printf("Page new val: %p\n", page);
-			}
-			else
-				puts("Text View");
-		
-		if(!tablabel->filename.empty())
+		if(!notebook.get_current_page() == -1)
 		{
-			GFile* current_file = g_file_new_for_path(tablabel->filename.c_str());
+			Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 			
-			GtkSourceFile* new_source_file = gtk_source_file_new();
-		
-			gtk_source_file_set_location(new_source_file, current_file);
+			Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
 			
-			GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(
-				static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
+			TabLabel* tablabel = static_cast<TabLabel*>(box);
 			
-			GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(
-				s_buffer, new_source_file, current_file);
-		
-			puts("B4 the async launch");
-			gtk_source_file_saver_save_async(
-			new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
-			[](GObject* source_obj, GAsyncResult* res, gpointer new_srcfile_saver) -> void {
-				GError* error = nullptr;
-				puts("Ansync launch b4 finish call");
-				gboolean success = gtk_source_file_saver_save_finish(
-					(GtkSourceFileSaver*)new_srcfile_saver, res, &error);
-				if(success)
-					puts("Successfully saved file");
+			if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
+				{
+					page = scrld->get_child();
+					puts("Scrolled Window");
+					printf("Page new val: %p\n", page);
+				}
 				else
-					printf("Failed to save file: %i, %s\n",
-						error->code,error->message);
-				},
-				// Pass the loader as the user data, so that we can just keep
-				// the lambda function as is
-				(gpointer)new_srcfile_saver);
-				return;
+					puts("Text View");
+			
+			if(!tablabel->filename.empty())
+			{
+				GFile* current_file = g_file_new_for_path(tablabel->filename.c_str());
+				
+				GtkSourceFile* new_source_file = gtk_source_file_new();
+			
+				gtk_source_file_set_location(new_source_file, current_file);
+				
+				GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(
+					static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
+				
+				GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(
+					s_buffer, new_source_file, current_file);
+			
+				puts("B4 the async launch");
+				gtk_source_file_saver_save_async(
+				new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+				[](GObject* source_obj, GAsyncResult* res, gpointer new_srcfile_saver) -> void {
+					GError* error = nullptr;
+					puts("Ansync launch b4 finish call");
+					gboolean success = gtk_source_file_saver_save_finish(
+						(GtkSourceFileSaver*)new_srcfile_saver, res, &error);
+					if(success)
+						puts("Successfully saved file");
+					else
+						printf("Failed to save file: %i, %s\n",
+							error->code,error->message);
+					},
+					// Pass the loader as the user data, so that we can just keep
+					// the lambda function as is
+					(gpointer)new_srcfile_saver);
+					return;
+			}
+			
+			SaveFileAs();
 		}
-		
-		GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File",
-			GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SAVE, "_Save",
-			GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
-		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
-		{			
+	}
+	void JazzIDE::SaveFileAs()
+	{
+		if(!notebook.get_current_page() == -1)
+		{
+			Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 			
-			GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(
-				static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
+			Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
 			
-			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
+			Gtk::Label* label = static_cast<Gtk::Label*>(box->get_children()[0]);
 			
-			GFile* new_file = g_file_new_for_path(filename);
+			TabLabel* tablabel = static_cast<TabLabel*>(box);
 			
-			GtkSourceFile* new_source_file = gtk_source_file_new();
-		
-			gtk_source_file_set_location(new_source_file, new_file);
-		
-			GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(
-				s_buffer, new_source_file, new_file);
-		
-			puts("B4 the async launch");
-			gtk_source_file_saver_save_async(
-			new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
-			[](GObject* source_obj, GAsyncResult* res, gpointer new_srcfile_saver) -> void {
-				GError* error = nullptr;
-				puts("Ansync launch b4 finish call");
-				gboolean success = gtk_source_file_saver_save_finish(
-					(GtkSourceFileSaver*)new_srcfile_saver, res, &error);
-				if(success)
-					puts("Successfully saved file");
+			if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
+				{
+					page = scrld->get_child();
+					puts("Scrolled Window");
+					printf("Page new val: %p\n", page);
+				}
 				else
-					printf("Failed to save file: %i, %s\n",
-						error->code,error->message);
-				},
-				// Pass the loader as the user data, so that we can just keep
-				// the lambda function as is
-				(gpointer)new_srcfile_saver);
+					puts("Text View");
 			
-			puts("After the async launch");
-
-			std::string filenm = filename;
+			GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File",
+				GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SAVE, "_Save",
+				GTK_RESPONSE_ACCEPT, "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+			if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
+			{			
+				
+				GtkSourceBuffer* s_buffer = GTK_SOURCE_BUFFER(
+					static_cast<Gtk::TextView*>(page)->get_buffer()->gobj());
+				
+				gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER( dialog ));
+				
+				GFile* new_file = g_file_new_for_path(filename);
+				
+				GtkSourceFile* new_source_file = gtk_source_file_new();
 			
-			tablabel->filename = filenm;
-
-			std::string shortname = filenm.substr(filenm.find_last_of("/")+1);
-
-			label->set_text(shortname);
-
-			g_object_unref(new_file);
-			g_free( filename );
+				gtk_source_file_set_location(new_source_file, new_file);
+			
+				GtkSourceFileSaver* new_srcfile_saver = gtk_source_file_saver_new_with_target(
+					s_buffer, new_source_file, new_file);
+			
+				puts("B4 the async launch");
+				gtk_source_file_saver_save_async(
+				new_srcfile_saver, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
+				[](GObject* source_obj, GAsyncResult* res, gpointer new_srcfile_saver) -> void {
+					GError* error = nullptr;
+					puts("Ansync launch b4 finish call");
+					gboolean success = gtk_source_file_saver_save_finish(
+						(GtkSourceFileSaver*)new_srcfile_saver, res, &error);
+					if(success)
+						puts("Successfully saved file");
+					else
+						printf("Failed to save file: %i, %s\n",
+							error->code,error->message);
+					},
+					// Pass the loader as the user data, so that we can just keep
+					// the lambda function as is
+					(gpointer)new_srcfile_saver);
+				
+				puts("After the async launch");
+	
+				std::string filenm = filename;
+				
+				tablabel->filename = filenm;
+	
+				std::string shortname = filenm.substr(filenm.find_last_of("/")+1);
+	
+				label->set_text(shortname);
+	
+				g_object_unref(new_file);
+				g_free( filename );
+			}
+			gtk_widget_destroy(dialog);
 		}
-		gtk_widget_destroy(dialog);
 	}
 	void JazzIDE::Quit()
 	{
