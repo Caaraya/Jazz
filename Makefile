@@ -2,7 +2,7 @@
 CXX=g++
 
 # Select compilation flags here:
-CFLAGS=-std=c++14 -O -g -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
+CFLAGS=-std=c++14 -g -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
 # Select linker flags here:
 LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./coralscript/bin -lcoral
