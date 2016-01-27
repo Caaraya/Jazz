@@ -24,6 +24,7 @@ namespace Jazz
 		coral::zircon::object project_doc;
       ProjectTreeView project_tree;
 	private:
+		void Save(const Glib::ustring&);
 		void NewFile();
 		void NewProject();
 		void SaveFile();
