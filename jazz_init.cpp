@@ -87,15 +87,15 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	using std::placeholders::_1;
 	using std::placeholders::_2;
 
-	gdb->AddOutHandler(std::bind(&Terminal::Update, &terminal, _1, _2));
+	/*gdb->AddOutHandler(std::bind(&Terminal::Update, &terminal, _1, _2));
 	gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
 	gdb->Command("h");
 	gdb->Command("b gdb_test.cpp:9");
-	gdb->Command("r");
+	gdb->Command("r");*/
 }
 JazzIDE::~JazzIDE()
 {
-	delete gdb;
+	//delete gdb;
 }
 void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
 {
@@ -138,12 +138,8 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 					puts("Breakpoint hit and we opened a file");
 					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 					BreakpointCallbackData* data = new BreakpointCallbackData{31, 0U, page};
-					data->signal_id = g_signal_connect(
-						GTK_WIDGET(page->GetSourceView()),
-						"size-allocate",
-						G_CALLBACK(OnSizeAllocate),
-						(gpointer)data
-					); 
+					data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
+						G_CALLBACK(OnSizeAllocate), (gpointer)data); 
 				}
 				else
 				{

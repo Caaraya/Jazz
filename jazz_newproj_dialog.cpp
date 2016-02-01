@@ -1,5 +1,5 @@
 #include "jazz_newproj_dialog.hpp"
-#include "jazz_msgbox.hpp"
+#include "jazz_util.hpp"
 #include <iostream>
 using namespace coral::zircon;
 namespace Jazz

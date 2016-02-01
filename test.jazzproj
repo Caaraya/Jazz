@@ -1,6 +1,6 @@
 {
 	project_name : "Keith Sutherland",
-	compiler : {
+		compiler : {
 		command: "g++",
 		options: "-Os -std=c++14"
 	},
@@ -8,13 +8,17 @@
 		command: "g++",
 		options: "-lcoral"
 	},
-   source_files: [
-      "hello.c",
-      "test.cpp",
-      "guy.java",
-      "broson.rb",
-      "radical.py"
-   ],
+	target: {
+		executable_name: "best",
+		path_to: "./"
+	},
+	source_files: [
+		"hello.c",
+		"test.cpp",
+		"guy.java",
+		"broson.rb",
+		"radical.py"
+	],
 	objectfiles: [
 		"*.o",
 		"haha"

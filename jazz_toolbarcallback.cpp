@@ -1,4 +1,5 @@
 #include "jazz.hpp"
+#include "jazz_util.hpp"
 
 namespace Jazz
 {
@@ -9,12 +10,15 @@ namespace Jazz
 		try
 		{
 			object target = project_doc.get("target");
-			std::string path = target["path"].as<string>();
-			std::string name = target["name"].as<string>();
+			Glib::ustring path_to_exe = target.get("path_to").as<string>();
+			path_to_exe += target.get("executable_name").as<string>();
+			
+			if(!FileExists(path_to_exe))
+				throw std::runtime_error(path_to_exe+" could not be found");
 		}
 		catch(std::exception& e)
 		{
-			puts(e.what());
+			ShowMessage(e.what());
 		}
 	}
 }

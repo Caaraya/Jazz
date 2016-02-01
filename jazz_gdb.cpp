@@ -68,6 +68,8 @@ namespace Jazz
 	{
 		if(ready)
 		{
+			Command("stop");
+			Command("q");
 			out_src->destroy();
 			err_src->destroy();
 			Glib::spawn_close_pid(_child_pid);

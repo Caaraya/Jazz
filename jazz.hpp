@@ -15,7 +15,7 @@ namespace Jazz
 	public:
 		JazzIDE();
 		~JazzIDE();
-		private:
+	private:
 		Gtk::Box box;
 		Gtk::Box h_box;
 		Gtk::Notebook notebook;
@@ -45,11 +45,10 @@ namespace Jazz
 		void Quit();
 		void ChooseFont();
 		void SetNewPageFont();
-		void BindWren();
 		bool HandleGDBOutput(Glib::IOCondition, const Glib::ustring&);
 		void ExecuteProject();
 	private:
 		GtkSourceLanguageManager* language_manager;
-		GdbInstance* gdb = new GdbInstance("./test");
+		std::unique_ptr<GdbInstance> gdb;
 	};
 }
