@@ -2,11 +2,12 @@
 #include <gtkmm.h>
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
-#include "jazz_projecttree.hpp"
-#include "jazz_terminal.hpp"
-#include "coralscript/include/jsonparse.hh"
 #include "jazz_watch.hpp"
 #include "jazz_gdb.hpp"
+#include "jazz_projecttree.hpp"
+#include "jazz_terminal.hpp"
+#include "jazz_tablabel.hpp"
+#include "coralscript/include/jsonparse.hh"
 
 namespace Jazz
 {
@@ -24,13 +25,14 @@ namespace Jazz
 		Gtk::Toolbar* toolbar;
 		Glib::RefPtr<Gtk::Builder> builder;
 		FileTree file_tree;
+		WatchWindow watch_window;
 		coral::zircon::object project_doc;
 		ProjectTreeView project_tree;
 		Terminal terminal;
 	private:
+		// Menu callbacks
         TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
-		// Menu callbacks
 		void NewFile();
 		void NewProject();
 		void SaveFile();

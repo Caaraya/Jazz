@@ -1,7 +1,6 @@
 # Select compiler here:
 CXX=g++
-
-OPTIMIZE=-Os
+OPTIMIZE=-g
 # Select compilation flags here:
 CFLAGS=-std=c++14 $(OPTIMIZE) -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
@@ -35,21 +34,21 @@ jazz_menucallback.o: jazz_menucallback.cpp
 jazz_filetree.o: jazz_filetree.cpp
 	$(CXX) $(CFLAGS) jazz_filetree.cpp
 
-jazz_projecttree.o: jazz_projecttree.cpp
-	$(CXX) $(CFLAGS) jazz_projecttree.cpp
-
-jazz_newproj_dialog.o: jazz_newproj_dialog.cpp
-	$(CXX) $(CFLAGS) jazz_newproj_dialog.cpp
-
 jazz_watch.o: jazz_watch.cpp
 	$(CXX) $(CFLAGS) jazz_watch.cpp
-	
-jazz_util.o: jazz_util.cpp
-	$(CXX) $(CFLAGS) jazz_util.cpp
 	
 jazz_gdb.o: jazz_gdb.cpp
 	$(CXX) $(CFLAGS) jazz_gdb.cpp
 
+jazz_projecttree.o: jazz_projecttree.cpp
+	$(CXX) $(CFLAGS) jazz_projecttree.cpp
+	
+jazz_newproj_dialog.o: jazz_newproj_dialog.cpp
+	$(CXX) $(CFLAGS) jazz_newproj_dialog.cpp
+
+jazz_util.o: jazz_util.cpp
+	$(CXX) $(CFLAGS) jazz_util.cpp
+	
 jazz_toolbarcallback.o: jazz_toolbarcallback.cpp
 	$(CXX) $(CFLAGS) jazz_toolbarcallback.cpp
 	

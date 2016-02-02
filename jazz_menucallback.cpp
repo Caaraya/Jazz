@@ -52,51 +52,7 @@ namespace Jazz
 		{
 			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 			
-<<<<<<< 2d4d7125297b48fc8d1ef473828e89d09b9368bb
-			// Pear down the name to just the short version of the filename eg. this.txt
-			std::string shortname = "";
-			std::string title = filename;
-			if(title.find("/")!=std::string::npos)
-				shortname = title.substr(title.find_last_of("/")+1);
-			else
-				shortname = title;
-
-			// Create a new source view that is scrolled, then get the buffer
-			SourceView* source_view = Gtk::manage(new SourceView);
-			
-			GtkSourceBuffer* buff = source_view->get_buffer(); //sourceview.get_buffer();
-	
-			// Create a new tab label (box containing label and button) contains a
-			// reference to the child the notebook has for it
-			TabLabel* tablabel = Gtk::manage(new TabLabel(shortname, *source_view));
-			
-			tablabel->filename = filename;
-	
-			// Add the two objects to the notebook
-			notebook.append_page(*source_view, *tablabel);
-			
-			// ----------------------------------------------------------
-			// Open the file and load it with the sourcefileloader object
-			// ----------------------------------------------------------
-			GFile* new_file = g_file_new_for_path(filename);
-			GtkSourceFile* new_source_file = gtk_source_file_new();
-		
-			gtk_source_file_set_location(new_source_file, new_file);
-		
-			GtkSourceFileLoader* loader = gtk_source_file_loader_new(
-				buff, new_source_file);
-			
-			// Launch an async call to load the buffer with the contents of the file
-			gtk_source_file_loader_load_async(
-			loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL,	NULL,
-			// Function to 'finish' the loading routine
-			[](GObject* source_obj, GAsyncResult* res, gpointer loader) -> void {
-				GError* error = nullptr;
-				gboolean success = gtk_source_file_loader_load_finish(
-					(GtkSourceFileLoader*)loader, res, &error);
-=======
 			AddFileToNotebook(filename, [this](bool success){
->>>>>>> Big refactor to make 1 general function for opening files
 				if(success)
 					notebook.set_current_page(-1);
 			});
@@ -171,8 +127,6 @@ namespace Jazz
 	void JazzIDE::Save(const Glib::ustring& filename)
 	{
 		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
-			
-		//Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
 		
 		if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
 			{
@@ -246,28 +200,10 @@ namespace Jazz
 			}
 		}				
 	}
-	void JazzIDE::NewProject()
-	{
-		NewProjectDialog* project_dialog = nullptr;
-		builder->get_widget_derived("new_proj_dialog", project_dialog);
-		project_dialog->set_transient_for(*this);
-		
-		int response = project_dialog->run();
-		
-		switch(response)
-		{
-		case 0: // Project settings made
-			puts("Project configuration created");
-			break;
-		case -1: // Cancel
-			puts("New project canceled");
-			break;
-		}
-	}
 	// Pass in a function object as the callback, the callback will accept a bool indicating success
 	void JazzIDE::AddFileToNotebook(const Glib::ustring& fname, std::function<void(bool)> callback)
 	{		
-		GtkSourceBuffer* buff = gtk_source_buffer_new(NULL);
+		GtkSourceBuffer* buff = gtk_source_buffer_new(NULL);	
 		// ----------------------------------------------------------
 		// Open the file and load it with the sourcefileloader object
 		// ----------------------------------------------------------
@@ -342,5 +278,23 @@ namespace Jazz
 		// Pass the loader as the user data, so that we can just keep
 		// the lambda function as is
 		(gpointer)new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)}); //finish_data);
+	}
+	void JazzIDE::NewProject()
+	{
+		NewProjectDialog* project_dialog = nullptr;
+		builder->get_widget_derived("new_proj_dialog", project_dialog);
+		project_dialog->set_transient_for(*this);
+		
+		int response = project_dialog->run();
+		
+		switch(response)
+		{
+		case 0: // Project settings made
+			puts("Project configuration created");
+			break;
+		case -1: // Cancel
+			puts("New project canceled");
+			break;
+		}
 	}
 }
