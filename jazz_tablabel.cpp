@@ -39,6 +39,11 @@ namespace Jazz
 		
 		child_ref = &ref;
 	}
+    
+    Gtk::Label& TabLabel::TextLabel()
+    {
+        return text_label;
+    }
 	
 	void TabLabel::Close()
 	{

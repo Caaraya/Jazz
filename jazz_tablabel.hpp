@@ -1,3 +1,4 @@
+#pragma once
 #include <gtkmm.h>
 
 namespace Jazz

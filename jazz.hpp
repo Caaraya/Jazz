@@ -2,6 +2,7 @@
 #include <gtksourceview/gtksourceview.h>
 #include "jazz_filetree.hpp"
 #include "jazz_projecttree.hpp"
+#include  "jazz_tabLabel.hpp"
 #include "coralscript/include/jsonparse.hh"
 typedef struct WrenVM WrenVM;
 
@@ -24,6 +25,7 @@ namespace Jazz
 		coral::zircon::object project_doc;
       ProjectTreeView project_tree;
 	private:
+        TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
 		void NewFile();
 		void NewProject();

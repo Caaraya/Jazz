@@ -1,5 +1,4 @@
 #include "jazz.hpp"
-#include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
 #include "jazz_newproj_dialog.hpp"
 #include <gtksourceview/gtksource.h>
@@ -125,21 +124,32 @@ namespace Jazz
 		}
 		gtk_widget_destroy(dialog);
 	}
-	void JazzIDE::SaveFile()
-	{
-		int pages = notebook.get_n_pages();
+    
+    TabLabel* JazzIDE::GetTabLabel()
+    {
+        int pages = notebook.get_n_pages();
 		
-		if(pages <= 0) return;
+		if(pages <= 0) return nullptr;
 		
 		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 		
 		Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
 		
 		TabLabel* tablabel = static_cast<TabLabel*>(box);
+        
+        return tablabel;
+    }
+    
+	void JazzIDE::SaveFile()
+	{
 		
-		if(!tablabel->filename.empty())
+		TabLabel* tabLabel = GetTabLabel();
+        
+        if(tabLabel == nullptr) return;
+		
+		if(!tabLabel->filename.empty())
 		{
-			Save(tablabel->filename);
+			Save(tabLabel->filename);
 			return;
 		}
 		SaveFileAs();
@@ -147,17 +157,9 @@ namespace Jazz
 	}
 	void JazzIDE::SaveFileAs()
 	{
-		int pages = notebook.get_n_pages();
-		
-		if(pages <= 0) return;
-		
-		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
-		
-		Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
-		
-		Gtk::Label* label = static_cast<Gtk::Label*>(box->get_children()[0]);
-		
-		TabLabel* tablabel = static_cast<TabLabel*>(box);
+		TabLabel* tabLabel = GetTabLabel();
+        
+        if (tabLabel == nullptr) return;
 		
 		GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File",
 			GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SAVE, "_Save",
@@ -171,7 +173,7 @@ namespace Jazz
 
 			std::string filenm = filename;
 			
-			tablabel->filename = filename;
+			tabLabel->filename = filename;
 
 			std::string shortname = filenm.substr(filenm.find_last_of(
 				#if defined _WIN32
@@ -181,7 +183,7 @@ namespace Jazz
 				#endif
 				)+1);
 				
-			label->set_text(shortname);
+			tabLabel->TextLabel().set_text(shortname);
 
 			g_free( filename );
 		}
@@ -191,7 +193,7 @@ namespace Jazz
 	{
 		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 			
-		Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
+		//Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
 		
 		if(auto scrld = dynamic_cast<Gtk::ScrolledWindow*>(page))
 			{
