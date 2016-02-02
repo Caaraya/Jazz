@@ -38,7 +38,6 @@ namespace Jazz
 		void SaveFile();
 		void SaveFileAs();
 		void OpenFile();
-        void OpenProject();
 		// String filename
 		// Call back with a bool representing success
 		void AddFileToNotebook(const Glib::ustring&, std::function<void(bool)>);
