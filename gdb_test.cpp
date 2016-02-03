@@ -1,4 +1,5 @@
 extern "C" int printf(const char*, ...);
+void print_stuff();
 
 int main()
 {
@@ -7,6 +8,8 @@ int main()
 	test = 7;
 	
 	printf("Printf printing: %i\n", test);
+	
+	print_stuff();
 }
 
 void print_stuff()

@@ -31,7 +31,7 @@ namespace Jazz
 		Terminal terminal;
 	private:
 		// Menu callbacks
-        TabLabel* GetTabLabel();
+		TabLabel* GetTabLabel();
 		void Save(const Glib::ustring&);
 		void NewFile();
 		void NewProject();

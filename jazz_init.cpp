@@ -3,6 +3,7 @@
 #include "jazz_tablabel.hpp"
 #include "jazz_sourceview.hpp"
 #include "jazz_filetree.hpp"
+#include "jazz_util.hpp"
 #include <iostream>
 
 using coral::zircon::json_loadfile;
@@ -132,10 +133,9 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			auto str = thing.substr(new_pos);
 			str = str.substr(0, str.find('"'));
 			
-			AddFileToNotebook(str, [this](bool success){
+			AddFileToNotebook(str, [this, str](bool success){
 				if(success)
 				{
-					puts("Breakpoint hit and we opened a file");
 					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 					BreakpointCallbackData* data = new BreakpointCallbackData{31, 0U, page};
 					data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
@@ -144,7 +144,8 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 				else
 				{
 					// In the future we should use lib notify to inform the user that this operation didn't work
-					puts("Breakpoint hit but we didn't open the file successfully");
+					ShowMessage("Breakpoint hit but could not open"
+									" the file" + str + " successfully");
 				}
 			});
 		}

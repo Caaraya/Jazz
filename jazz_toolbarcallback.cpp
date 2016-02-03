@@ -15,6 +15,22 @@ namespace Jazz
 			
 			if(!FileExists(path_to_exe))
 				throw std::runtime_error(path_to_exe+" could not be found");
+				
+			using std::placeholders::_1;
+			using std::placeholders::_2;
+			gdb.reset(new GdbInstance(path_to_exe.c_str()));
+			gdb->AddOutHandler(std::bind(&Terminal::Update, &terminal, _1, _2));
+			gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
+			
+			if(project_doc.has("breakpoints"))
+			{
+				object breakpoints = project_doc["breakpoints"];
+				
+				for(auto breakpoint : breakpoints.as<array>())
+					gdb->Command(breakpoint.as<string>().c_str());
+			}
+			//gdb->Command("b gdb_test.cpp:9");
+			gdb->Command("r");
 		}
 		catch(std::exception& e)
 		{

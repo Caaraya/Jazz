@@ -9,9 +9,12 @@
 		options: "-lcoral"
 	},
 	target: {
-		executable_name: "best",
+		executable_name: "test.exe",
 		path_to: "./"
 	},
+	breakpoints: [
+		"b gdb_test.cpp:32"
+	],
 	source_files: [
 		"hello.c",
 		"test.cpp",
