@@ -51,6 +51,10 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	builder->get_widget("tb_execute", titem);
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::ExecuteProject));
 	
+	builder->get_widget("tb_resumedbg", titem);
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &DebugContinueCmd));
+	titem->set_tooltip_text("Continue");
+	
 	builder->get_widget("jazz_toolbar", toolbar);
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
@@ -84,15 +88,6 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	project_tree.SetProject(project_doc);
 
 	show_all_children();
-	
-	using std::placeholders::_1;
-	using std::placeholders::_2;
-
-	/*gdb->AddOutHandler(std::bind(&Terminal::Update, &terminal, _1, _2));
-	gdb->AddOutHandler(std::bind(&JazzIDE::HandleGDBOutput, this, _1, _2));
-	gdb->Command("h");
-	gdb->Command("b gdb_test.cpp:9");
-	gdb->Command("r");*/
 }
 JazzIDE::~JazzIDE()
 {

@@ -48,6 +48,7 @@ namespace Jazz
 		void SetNewPageFont();
 		bool HandleGDBOutput(Glib::IOCondition, const Glib::ustring&);
 		void ExecuteProject();
+		void DebugContinueCmd();
 	private:
 		GtkSourceLanguageManager* language_manager;
 		std::unique_ptr<GdbInstance> gdb;
