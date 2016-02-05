@@ -11,12 +11,12 @@ namespace Jazz
 	int TabLabel::nth_tab = 1;
 	
 	TabLabel::TabLabel(Gtk::Widget& child_ref):
-		TabLabel(std::string("Page: ")+std::to_string(nth_tab++), child_ref)
+		TabLabel(std::string("Page: ")+std::to_string(nth_tab++), child_ref, "")
 	{
 	}
 	
-	TabLabel::TabLabel(const std::string& title, Gtk::Widget& ref) :
-		Gtk::Box(Gtk::Orientation::ORIENTATION_HORIZONTAL)
+	TabLabel::TabLabel(const std::string& title, Gtk::Widget& ref, const Glib::ustring& full_path) :
+		Gtk::Box(Gtk::Orientation::ORIENTATION_HORIZONTAL), full_path(full_path)
 	{
 		std::string shortname = "";
 		if(title.find("\\")!=std::string::npos)

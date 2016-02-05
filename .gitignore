@@ -4,4 +4,6 @@
 *.out
 *~
 bin
+test
+test.exe
 .vscode

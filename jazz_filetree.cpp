@@ -37,7 +37,7 @@ namespace Jazz
 			enumer->next_files_async(
 				[this, file, parent, enumer, path](Glib::RefPtr<Gio::AsyncResult>& res)-> void
 				{
-					Glib::ListHandle<Glib::RefPtr<Gio::FileInfo>> files =	enumer->next_files_finish(res);
+					Glib::ListHandle<Glib::RefPtr<Gio::FileInfo>> files = enumer->next_files_finish(res);
 
 					for(auto the_file : files)
 					{

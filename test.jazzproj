@@ -1,0 +1,30 @@
+{
+	project_name : "Keith Sutherland",
+		compiler : {
+		command: "g++",
+		options: "-Os -std=c++14"
+	},
+	linker: {
+		command: "g++",
+		options: "-lcoral"
+	},
+	target: {
+		executable_name: "test.exe",
+		path_to: "./"
+	},
+	breakpoints: [
+		"b gdb_test.cpp:12",
+		"b gdb_test.cpp:32"
+	],
+	source_files: [
+		"hello.c",
+		"test.cpp",
+		"guy.java",
+		"broson.rb",
+		"radical.py"
+	],
+	objectfiles: [
+		"*.o",
+		"haha"
+	]
+}
