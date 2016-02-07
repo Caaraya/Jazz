@@ -15,8 +15,10 @@ namespace Jazz
 		{
 			return full_path;
 		}
-	public:
-		Glib::ustring filename = "";
+		void FullPath(const Glib::ustring& path)
+		{
+			full_path = path;
+		}
 	private:
 		Gtk::Button close_button;
 		Gtk::Label	text_label;

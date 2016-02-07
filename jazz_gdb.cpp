@@ -22,7 +22,6 @@ namespace Jazz
 					throw Glib::SpawnError(Glib::SpawnError::Code::NOEXEC, msg);
 				}
 			}
-			puts("Gonna spawn a process!!");
 			std::vector<std::string> command = {
 				std::string("gdb"),
 				std::string("-interpreter=mi"),

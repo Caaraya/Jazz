@@ -82,9 +82,9 @@ namespace Jazz
         
         if(tabLabel == nullptr) return;
 		
-		if(!tabLabel->filename.empty())
+		if(!tabLabel->FullPath().empty())
 		{
-			Save(tabLabel->filename);
+			Save(tabLabel->FullPath());
 			return;
 		}
 		SaveFileAs();
@@ -108,15 +108,9 @@ namespace Jazz
 
 			std::string filenm = filename;
 			
-			tabLabel->filename = filename;
+			tabLabel->FullPath(filename);
 
-			std::string shortname = filenm.substr(filenm.find_last_of(
-				#ifdef G_OS_WIN32
-				"\\"
-				#else
-				"/"
-				#endif
-				)+1);
+			std::string shortname = filenm.substr(filenm.find_last_of(dir_seperator)+1);
 				
 			tabLabel->TextLabel().set_text(shortname);
 
@@ -173,8 +167,6 @@ namespace Jazz
 		// Pass the loader as the user data, so that we can just keep
 		// the lambda function as is
 		(gpointer)user_data);
-			
-			//g_object_unref(current_file);
 	}
 	void JazzIDE::Quit()
 	{
@@ -329,7 +321,7 @@ namespace Jazz
 		for(int i = 0; i < notebook.get_n_pages(); i++)
 		{
 			const TabLabel* tab_label = static_cast<TabLabel*>(notebook.get_tab_label(*notebook.get_nth_page(i)));
-			if(tab_label->filename == fullpath)
+			if(tab_label->FullPath() == fullpath)
 				return true;
 		}
 		return false;

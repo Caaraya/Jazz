@@ -11,6 +11,13 @@
 
 namespace Jazz
 {
+	const char dir_seperator =
+	#ifdef G_OS_WIN32
+	'\\';
+	#else
+	'/';
+	#endif
+	
 	class JazzIDE : public Gtk::Window
 	{
 	public:

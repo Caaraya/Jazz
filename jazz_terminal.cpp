@@ -2,8 +2,8 @@
 
 namespace Jazz
 {
-	Terminal::Terminal(): 
-		//Gtk::ScrolledWindow(),
+	Terminal::Terminal(int max_lines, int remove_lines): 
+		buffer_max_lines(max_lines), buffer_remove_lines(remove_lines),
 		text_view(Gtk::manage(new Gtk::TextView)),
 		buffer(text_view->get_buffer())
 	{
@@ -16,6 +16,12 @@ namespace Jazz
 	}
 	bool Terminal::Update(Glib::IOCondition, const Glib::ustring& text)
 	{
+		if(buffer_max_lines > 0 && buffer->get_line_count() > buffer_max_lines)
+		{
+			buffer->erase(buffer->begin(), buffer_remove_lines > 0 ?
+				buffer->get_iter_at_line(buffer_remove_lines) :
+				buffer->get_iter_at_line(buffer->get_line_count()/2));
+		}
 		AddText(text);
 		return true;
 	}
@@ -26,5 +32,10 @@ namespace Jazz
 	void Terminal::AddText(const Glib::ustring& text)
 	{
 		buffer->insert_at_cursor(text);
+	}
+	void Terminal::SetCutoff(int buffer_no_lines, int no_lines_remove)
+	{
+		buffer_max_lines = buffer_no_lines;
+		buffer_remove_lines = no_lines_remove;
 	}
 }

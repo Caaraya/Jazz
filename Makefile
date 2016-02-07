@@ -1,6 +1,6 @@
 # Select compiler here:
 CXX=g++
-OPTIMIZE=-Os
+OPTIMIZE=-g
 # Select compilation flags here:
 CFLAGS=-std=c++14 $(OPTIMIZE) -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
