@@ -52,8 +52,8 @@ namespace Jazz
 		{
 			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 			
-			AddFileToNotebook(filename, [this](bool success){
-				if(success)
+			AddFileToNotebook(filename, [this](FileOpened success){
+				if(success == FileOpened::Success)
 					notebook.set_current_page(-1);
 			});
 		}
@@ -111,7 +111,7 @@ namespace Jazz
 			tabLabel->filename = filename;
 
 			std::string shortname = filenm.substr(filenm.find_last_of(
-				#if defined _WIN32
+				#ifdef G_OS_WIN32
 				"\\"
 				#else
 				"/"
@@ -201,23 +201,37 @@ namespace Jazz
 		}				
 	}
 	// Pass in a function object as the callback, the callback will accept a bool indicating success
-	void JazzIDE::AddFileToNotebook(const Glib::ustring& fname, std::function<void(bool)> callback)
-	{		
-		GtkSourceBuffer* buff = gtk_source_buffer_new(NULL);	
-		// ----------------------------------------------------------
-		// Open the file and load it with the sourcefileloader object
-		// ----------------------------------------------------------
-		GFile* new_file = g_file_new_for_path(fname.c_str());
-		GtkSourceFile* new_source_file = gtk_source_file_new();
-		gtk_source_file_set_location(new_source_file, new_file);
-		GtkSourceFileLoader* loader = gtk_source_file_loader_new(buff, new_source_file);
+	void JazzIDE::AddFileToNotebook(const Glib::ustring& fname, std::function<void(FileOpened)> callback)
+	{
+		GFile* new_file = nullptr;
+		GtkSourceFile* new_source_file = nullptr;
+		GtkSourceFileLoader* loader = nullptr;
+		GtkSourceBuffer* buff = nullptr;
+		FileOpened file_open_success = FileOpened::Failure;
+		
+		if(IsFileOpen(fname))
+		{
+			file_open_success = FileOpened::WasOpen;
+			callback(file_open_success);
+		}
+		else
+		{
+			buff = gtk_source_buffer_new(NULL);	
+			// ----------------------------------------------------------
+			// Open the file and load it with the sourcefileloader object
+			// ----------------------------------------------------------
+			new_file = g_file_new_for_path(fname.c_str());
+			new_source_file = gtk_source_file_new();
+			gtk_source_file_set_location(new_source_file, new_file);
+			loader = gtk_source_file_loader_new(buff, new_source_file);
+		}
 		// -------------------------------------------------------------------------
 		// This is the data we need to keep a copy of for the finalization callback
 		// ------------------------------------------------------------------------
 		struct load_async_finish_data
 		{
 			GtkSourceFileLoader* loader;
-			std::function<void(bool)> callback;
+			std::function<void(FileOpened)> callback;
 			Glib::ustring file_name;
 			GtkSourceBuffer* source_buffer;
 			JazzIDE* jazz_ide;
@@ -225,8 +239,8 @@ namespace Jazz
 			GtkSourceLanguageManager* lang_manager;
 			Gtk::Notebook* notebook;
 			std::function<void()> set_new_page_font;
+			FileOpened file_open_success;
 		};
-		
 		//load_async_finish_data* finish_data = new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)};
 		// Launch an async call to load the buffer with the contents of the file
 		gtk_source_file_loader_load_async(loader, G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL,
@@ -238,6 +252,7 @@ namespace Jazz
 			
 			if(success)
 			{
+				final_data->file_open_success = FileOpened::Success;
 				printf("%s successfully opened\n", final_data->file_name.c_str());
 				
 				// Generate the name to be shown in the notebook tab
@@ -264,6 +279,7 @@ namespace Jazz
 			}
 			else
 			{
+				final_data->file_open_success = FileOpened::Failure;
 				printf("Failed to open file: %s, error: %i, %s\n", final_data->file_name.c_str(), error->code, error->message);
 				// Unref the object to destroy it because its not going to be owned by any widget
 				g_object_unref(final_data->source_buffer);
@@ -271,13 +287,24 @@ namespace Jazz
 			// Free the file that we were working with since we're done
 			g_object_unref(final_data->the_file);
 			// Call the users callback function
-			final_data->callback(static_cast<bool>(success));
+			final_data->callback(final_data->file_open_success);
 			// Delete the instantation of the data we needed to keep a copy of
 			delete final_data;
 		}, 
 		// Pass the loader as the user data, so that we can just keep
 		// the lambda function as is
-		(gpointer)new load_async_finish_data{loader, callback, fname, buff, this, new_file, language_manager, &notebook, std::bind(&JazzIDE::SetNewPageFont, this)}); //finish_data);
+		(gpointer)new load_async_finish_data{
+			loader,
+			callback,
+			fname,
+			buff,
+			this,
+			new_file,
+			language_manager,
+			&notebook,
+			std::bind(&JazzIDE::SetNewPageFont, this),
+			file_open_success
+		});
 	}
 	void JazzIDE::NewProject()
 	{
@@ -296,5 +323,15 @@ namespace Jazz
 			puts("New project canceled");
 			break;
 		}
+	}
+	bool JazzIDE::IsFileOpen(const Glib::ustring& fullpath)
+	{
+		for(int i = 0; i < notebook.get_n_pages(); i++)
+		{
+			const TabLabel* tab_label = static_cast<TabLabel*>(notebook.get_tab_label(*notebook.get_nth_page(i)));
+			if(tab_label->filename == fullpath)
+				return true;
+		}
+		return false;
 	}
 }

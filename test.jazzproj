@@ -9,7 +9,7 @@
 		options: "-lcoral"
 	},
 	target: {
-		executable_name: "test.exe",
+		executable_name: "test",
 		path_to: "./"
 	},
 	breakpoints: [

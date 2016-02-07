@@ -52,7 +52,7 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::ExecuteProject));
 	
 	builder->get_widget("tb_resumedbg", titem);
-	titem->signal_clicked().connect(sigc::mem_fun(*this, &DebugContinueCmd));
+	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::DebugContinueCmd));
 	titem->set_tooltip_text("Continue");
 	
 	builder->get_widget("jazz_toolbar", toolbar);
@@ -128,19 +128,33 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			auto str = thing.substr(new_pos);
 			str = str.substr(0, str.find('"'));
 			
-			AddFileToNotebook(str, [this, str](bool success){
-				if(success)
+			new_pos = thing.rfind("line=")+6U;
+			int line_num = std::stoi(thing.substr(new_pos, thing.find('"', new_pos)));  
+			
+			AddFileToNotebook(str, [this, str, line_num](FileOpened success){
+				switch(success)
 				{
-					SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
-					BreakpointCallbackData* data = new BreakpointCallbackData{31, 0U, page};
-					data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
-						G_CALLBACK(OnSizeAllocate), (gpointer)data); 
-				}
-				else
-				{
-					// In the future we should use lib notify to inform the user that this operation didn't work
-					ShowMessage("Breakpoint hit but could not open"
-									" the file" + str + " successfully");
+					case FileOpened::Success:
+					{
+						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
+						BreakpointCallbackData* data = new BreakpointCallbackData{line_num, 0U, page};
+						data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
+							G_CALLBACK(OnSizeAllocate), (gpointer)data); 
+						page->ScrollToLine(line_num);
+						puts("File opened successfully in jazz init callback");
+					}break;
+					case FileOpened::Failure:
+					{
+						// In the future we should use lib notify to inform the user that this operation didn't work
+						ShowMessage("Breakpoint hit but could not open"
+										" the file" + str + " successfully");
+					}break;
+					case FileOpened::WasOpen:
+					{
+						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
+						page->ScrollToLine(line_num);
+						puts("File was already open in jazz init callback");
+					}break;
 				}
 			});
 		}

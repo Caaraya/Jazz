@@ -11,7 +11,12 @@ namespace Jazz
 		{
 			object target = project_doc.get("target");
 			Glib::ustring path_to_exe = target.get("path_to").as<string>();
-			path_to_exe += target.get("executable_name").as<string>();
+			path_to_exe += target.get("executable_name").as<string>()
+			#ifdef G_OS_WIN32
+			+ ".exe";
+			#else
+			;
+			#endif
 			
 			if(!FileExists(path_to_exe))
 				throw std::runtime_error(path_to_exe+" could not be found");
@@ -29,7 +34,6 @@ namespace Jazz
 				for(auto breakpoint : breakpoints.as<array>())
 					gdb->Command(breakpoint.as<string>().c_str());
 			}
-			//gdb->Command("b gdb_test.cpp:9");
 			gdb->Command("r");
 		}
 		catch(std::exception& e)
