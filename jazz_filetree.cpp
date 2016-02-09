@@ -59,9 +59,8 @@ namespace Jazz
 
 		// This deals with the case of being passed in current directory: ./ or prev directory: ../
 		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
-		Glib::RefPtr<Gio::FileInfo> file_info = file->query_info("standard::*");
-		
-		row[column.filename] = file_info->get_name();
+
+		row[column.filename] = file->get_basename();
 		
 		DrawTree(path, row);
     }

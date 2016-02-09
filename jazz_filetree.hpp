@@ -4,9 +4,8 @@
 
 namespace Jazz
 {
-	class FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
+	struct FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
 	{
-	public:
 		FileTreeModelColumns()
 		{
 			add(filename);
