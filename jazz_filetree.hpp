@@ -29,6 +29,7 @@ namespace Jazz
 		{
 			return tree_store;
 		}
+        void SetPath(const Glib::ustring&, bool clear = true);
 	private:
 		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
 	private:

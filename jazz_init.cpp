@@ -70,6 +70,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
    
 	builder->get_widget("filemenuopen", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+
+	builder->get_widget("filemenuopenfolder", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFolder));
 	
 	builder->get_widget("filemenusave", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
@@ -99,7 +102,8 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 	if(iter)
 	{
 		Gtk::TreeModel::Row row = *iter;
-		std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
+		
+        std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
 	}
 }
 struct BreakpointCallbackData

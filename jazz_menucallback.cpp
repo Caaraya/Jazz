@@ -326,4 +326,19 @@ namespace Jazz
 		}
 		return false;
 	}
+    void JazzIDE::OpenFolder()
+    {
+		GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+			GTK_WINDOW(gobj()), GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+            "_Open", GTK_RESPONSE_ACCEPT,
+            "_Cancel", GTK_RESPONSE_CANCEL, NULL);
+			
+		// If a user chose a file and selected "Open"
+		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
+		{
+			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+            file_tree.SetPath(filename);
+		}
+		gtk_widget_destroy(dialog);
+    }
 }
