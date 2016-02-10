@@ -52,6 +52,7 @@ namespace Jazz
 	}
     void FileTree::SetPath(const Glib::ustring& path, bool clear)
     {
+        this->path = path;
         if(clear)
             tree_store->clear();
         

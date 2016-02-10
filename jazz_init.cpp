@@ -104,6 +104,15 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 		Gtk::TreeModel::Row row = *iter;
 		
         std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
+        
+        Glib::ustring path = "";
+        
+        
+        Gtk::TreeModel::Row parent = *row.parent();
+        
+        std::cout << "Parent: filename= " << parent[file_tree.Columns().filename] << std::endl;
+        
+        std::cout << "Path: " << file_tree.CurrentPath() << std::endl;
 	}
 }
 struct BreakpointCallbackData
