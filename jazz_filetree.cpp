@@ -56,13 +56,16 @@ namespace Jazz
         if(clear)
             tree_store->clear();
         
-        const Gtk::TreeModel::Row& row = *(tree_store->append());
-
+        //const Gtk::TreeModel::Row& row = *(tree_store->append());
+		root = *(tree_store->append());
+		
 		// This deals with the case of being passed in current directory: ./ or prev directory: ../
 		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
 
-		row[column.filename] = file->get_basename();
+		//row[column.filename] = file->get_basename();
+		root[column.filename] = file->get_basename();
 		
-		DrawTree(path, row);
+		//DrawTree(path, row);
+		DrawTree(path, root);
     }
 }

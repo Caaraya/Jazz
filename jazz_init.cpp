@@ -10,7 +10,7 @@ using coral::zircon::json_loadfile;
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
-	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
+	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree(g_get_current_dir()),
 	project_doc(json_loadfile("test.jazzproj")),
 	project_tree(),
 	terminal(100, 50),
@@ -96,31 +96,34 @@ JazzIDE::~JazzIDE()
 {
 	//delete gdb;
 }
+namespace
+{
+	struct BreakpointCallbackData
+	{
+		int line;
+		gulong signal_id;
+		SourceView* source_view;
+	};
+    Glib::ustring BuildPathToFile(Gtk::TreeModel::Row row, Gtk::TreeModel::Row root_node, Jazz::FileTreeModelColumns& columns)
+    {
+        if(row == root_node)
+            return "";
+			
+		return BuildPathToFile(*row.parent(), root_node, columns) + dir_seperator + row[columns.filename];
+    }
+}
 void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
 {
 	Gtk::TreeModel::iterator iter = file_tree.TreeStore()->get_iter(path);
 	if(iter)
 	{
-		Gtk::TreeModel::Row row = *iter;
-		
-        std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
-        
-        Glib::ustring path = "";
-        
-        
-        Gtk::TreeModel::Row parent = *row.parent();
-        
-        std::cout << "Parent: filename= " << parent[file_tree.Columns().filename] << std::endl;
-        
-        std::cout << "Path: " << file_tree.CurrentPath() << std::endl;
+		AddFileToNotebook(file_tree.CurrentPath() + BuildPathToFile(*iter, file_tree.Root(), file_tree.Columns()),
+			[this](FileOpened file_status)
+		{
+			notebook.set_current_page(-1);
+		});
 	}
 }
-struct BreakpointCallbackData
-{
-	int line;
-	gulong signal_id;
-	SourceView* source_view;
-};
 static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
 {
 	BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);

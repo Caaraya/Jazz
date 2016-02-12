@@ -32,6 +32,10 @@ namespace Jazz
         {
             return path;
         }
+		Gtk::TreeModel::Row Root()
+		{
+			return root;
+		}
         void SetPath(const Glib::ustring&, bool clear = true);
 	private:
 		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
@@ -41,5 +45,6 @@ namespace Jazz
 		FileTreeModelColumns column;
         Glib::ustring path;
 		Glib::RefPtr<Gio::Cancellable> cancellation_token;
+		Gtk::TreeModel::Row root;
 	};
 }
