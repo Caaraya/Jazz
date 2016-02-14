@@ -55,6 +55,15 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::DebugContinueCmd));
 	titem->set_tooltip_text("Continue");
 	
+	// Need to figure out how to step out first
+	//builder->get_widget("tb_stepout", titem);
+	//titem->signal_clicked().connect([this](){ gdb->Command() })
+	builder->get_widget("tb_stepnext", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("n"); });
+	
+	builder->get_widget("tb_stepinto", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("s"); });
+	
 	builder->get_widget("jazz_toolbar", toolbar);
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
@@ -157,19 +166,17 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 						data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
 							G_CALLBACK(OnSizeAllocate), (gpointer)data); 
 						page->ScrollToLine(line_num);
-						puts("File opened successfully in jazz init callback");
 					}break;
 					case FileOpened::Failure:
 					{
 						// In the future we should use lib notify to inform the user that this operation didn't work
 						ShowMessage("Breakpoint hit but could not open"
-										" the file" + str + " successfully");
+										" the file" + str + " successfully", this);
 					}break;
 					case FileOpened::WasOpen:
 					{
 						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 						page->ScrollToLine(line_num);
-						puts("File was already open in jazz init callback");
 					}break;
 				}
 			});

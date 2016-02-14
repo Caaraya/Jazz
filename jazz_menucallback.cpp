@@ -205,6 +205,7 @@ namespace Jazz
 		{
 			file_open_success = FileOpened::WasOpen;
 			callback(file_open_success);
+			return;
 		}
 		else
 		{

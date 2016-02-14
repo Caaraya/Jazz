@@ -14,7 +14,7 @@ all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
 debug:
-	make all OPTIMIZE='-g -O'
+	make all OPTIMIZE='-g'
 	
 jazz.o: jazz.cpp
 	$(CXX) $(CFLAGS) jazz.cpp
