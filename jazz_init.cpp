@@ -55,9 +55,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::DebugContinueCmd));
 	titem->set_tooltip_text("Continue");
 	
-	// Need to figure out how to step out first
-	//builder->get_widget("tb_stepout", titem);
-	//titem->signal_clicked().connect([this](){ gdb->Command() })
+	builder->get_widget("tb_stepout", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("finish"); });
+	
 	builder->get_widget("tb_stepnext", titem);
 	titem->signal_clicked().connect([this](){ gdb->Command("n"); });
 	
