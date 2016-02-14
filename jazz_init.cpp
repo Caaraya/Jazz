@@ -10,7 +10,7 @@ using coral::zircon::json_loadfile;
 namespace Jazz
 {
 JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
-	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree("./"),
+	h_box(Gtk::ORIENTATION_HORIZONTAL, 1), file_tree(g_get_current_dir()),
 	project_doc(json_loadfile("test.jazzproj")),
 	project_tree(),
 	terminal(100, 50),
@@ -55,6 +55,15 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::DebugContinueCmd));
 	titem->set_tooltip_text("Continue");
 	
+	builder->get_widget("tb_stepout", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("finish"); });
+	
+	builder->get_widget("tb_stepnext", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("n"); });
+	
+	builder->get_widget("tb_stepinto", titem);
+	titem->signal_clicked().connect([this](){ gdb->Command("s"); });
+	
 	builder->get_widget("jazz_toolbar", toolbar);
 	box.pack_start(*menubar,false,false);
 	box.pack_start(*toolbar, false, false);
@@ -70,6 +79,9 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
    
 	builder->get_widget("filemenuopen", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFile));
+
+	builder->get_widget("filemenuopenfolder", menu_item);
+	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::OpenFolder));
 	
 	builder->get_widget("filemenusave", menu_item);
 	menu_item->signal_activate().connect(sigc::mem_fun(*this,&JazzIDE::SaveFile));
@@ -93,21 +105,34 @@ JazzIDE::~JazzIDE()
 {
 	//delete gdb;
 }
+namespace
+{
+	struct BreakpointCallbackData
+	{
+		int line;
+		gulong signal_id;
+		SourceView* source_view;
+	};
+    Glib::ustring BuildPathToFile(Gtk::TreeModel::Row row, Gtk::TreeModel::Row root_node, Jazz::FileTreeModelColumns& columns)
+    {
+        if(row == root_node)
+            return "";
+			
+		return BuildPathToFile(*row.parent(), root_node, columns) + dir_seperator + row[columns.filename];
+    }
+}
 void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn*)
 {
 	Gtk::TreeModel::iterator iter = file_tree.TreeStore()->get_iter(path);
 	if(iter)
 	{
-		Gtk::TreeModel::Row row = *iter;
-		std::cout <<"Row activated: filename= " << row[file_tree.Columns().filename] << std::endl;
+		AddFileToNotebook(file_tree.CurrentPath() + BuildPathToFile(*iter, file_tree.Root(), file_tree.Columns()),
+			[this](FileOpened file_status)
+		{
+			notebook.set_current_page(-1);
+		});
 	}
 }
-struct BreakpointCallbackData
-{
-	int line;
-	gulong signal_id;
-	SourceView* source_view;
-};
 static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
 {
 	BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);
@@ -141,19 +166,17 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 						data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
 							G_CALLBACK(OnSizeAllocate), (gpointer)data); 
 						page->ScrollToLine(line_num);
-						puts("File opened successfully in jazz init callback");
 					}break;
 					case FileOpened::Failure:
 					{
 						// In the future we should use lib notify to inform the user that this operation didn't work
 						ShowMessage("Breakpoint hit but could not open"
-										" the file" + str + " successfully");
+										" the file" + str + " successfully", this);
 					}break;
 					case FileOpened::WasOpen:
 					{
 						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 						page->ScrollToLine(line_num);
-						puts("File was already open in jazz init callback");
 					}break;
 				}
 			});

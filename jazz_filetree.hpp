@@ -4,9 +4,8 @@
 
 namespace Jazz
 {
-	class FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
+	struct FileTreeModelColumns : public Gtk::TreeModel::ColumnRecord
 	{
-	public:
 		FileTreeModelColumns()
 		{
 			add(filename);
@@ -29,13 +28,23 @@ namespace Jazz
 		{
 			return tree_store;
 		}
+        const Glib::ustring& CurrentPath() const
+        {
+            return path;
+        }
+		Gtk::TreeModel::Row Root()
+		{
+			return root;
+		}
+        void SetPath(const Glib::ustring&, bool clear = true);
 	private:
 		void DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent);
 	private:
 		Glib::RefPtr<Gtk::TreeStore> tree_store;
 		Gtk::TreeView tree_view;
 		FileTreeModelColumns column;
-      Glib::ustring path;
+        Glib::ustring path;
 		Glib::RefPtr<Gio::Cancellable> cancellation_token;
+		Gtk::TreeModel::Row root;
 	};
 }

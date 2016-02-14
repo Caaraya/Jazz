@@ -1,6 +1,6 @@
 # Select compiler here:
 CXX=g++
-OPTIMIZE=-g
+OPTIMIZE=-Os
 # Select compilation flags here:
 CFLAGS=-std=c++14 $(OPTIMIZE) -c -Wall `pkg-config --cflags gtksourceview-3.0 gtkmm-3.0`
 
@@ -14,7 +14,7 @@ all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
 debug:
-	make all OPTIMIZE='-g -O'
+	make all OPTIMIZE='-g'
 	
 jazz.o: jazz.cpp
 	$(CXX) $(CFLAGS) jazz.cpp

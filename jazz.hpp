@@ -56,7 +56,8 @@ namespace Jazz
 		// Call back with a bool representing success
 		void AddFileToNotebook(const Glib::ustring&, std::function<void(FileOpened)>);
 		void OpenProject();
-		void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
+		void OpenFolder();
+        void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
 		void Quit();
 		void ChooseFont();
 		void SetNewPageFont();

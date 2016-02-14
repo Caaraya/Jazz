@@ -13,17 +13,9 @@ namespace Jazz
 		
 		tree_store = Gtk::TreeStore::create(column);
 		tree_view.set_model(tree_store);
-		
-		const Gtk::TreeModel::Row& row = *(tree_store->append());
 
-		// This deals with the case of being passed in current directory: ./ or prev directory: ../
-		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
-		Glib::RefPtr<Gio::FileInfo> file_info = file->query_info("standard::*");
-		
-		row[column.filename] = file_info->get_name();
-		
-		
-		DrawTree(path, row);
+        // The tree view doesn't need to be cleared the first time
+        SetPath(path);
 	}
 	void FileTree::DrawTree(const std::string& path, const Gtk::TreeModel::Row& parent)
 	{
@@ -58,4 +50,22 @@ namespace Jazz
 		cancellation_token,
 		"standard::*");
 	}
+    void FileTree::SetPath(const Glib::ustring& path, bool clear)
+    {
+        this->path = path;
+        if(clear)
+            tree_store->clear();
+        
+        //const Gtk::TreeModel::Row& row = *(tree_store->append());
+		root = *(tree_store->append());
+		
+		// This deals with the case of being passed in current directory: ./ or prev directory: ../
+		Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(path);
+
+		//row[column.filename] = file->get_basename();
+		root[column.filename] = file->get_basename();
+		
+		//DrawTree(path, row);
+		DrawTree(path, root);
+    }
 }

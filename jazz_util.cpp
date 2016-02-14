@@ -1,9 +1,11 @@
 #include <gtkmm.h>
 namespace Jazz
 {
-	void ShowMessage(const Glib::ustring& s)
+	void ShowMessage(const Glib::ustring& s, Gtk::Window* parent)
 	{
 		Gtk::MessageDialog* msg = new Gtk::MessageDialog(s);
+		if(parent)
+			msg->set_transient_for(*parent);
 		msg->run();
 		delete msg;
 	}
