@@ -14,7 +14,7 @@ namespace Jazz
 		gtk_source_completion_words_register(completion_words, gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
-		
+		gtk_source_buffer_set_highlight_matching_brackets(GetSourceBuffer(), TRUE);
 		ShowLineNumbers(true);
 		
 		show_all();
@@ -29,7 +29,7 @@ namespace Jazz
 		gtk_source_completion_words_register(completion_words, gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
-			
+		gtk_source_buffer_set_highlight_matching_brackets(GetSourceBuffer(), TRUE);
 		ShowLineNumbers(true);
 		
 		show_all();
