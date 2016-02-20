@@ -62,17 +62,13 @@ namespace Jazz
     
     TabLabel* JazzIDE::GetTabLabel()
     {
-        int pages = notebook.get_n_pages();
-		
-		if(pages <= 0) return nullptr;
+		if(notebook.get_n_pages() <= 0) return nullptr;
 		
 		Gtk::Widget* page = notebook.get_nth_page(notebook.get_current_page());
 		
-		Gtk::Box* box = static_cast<Gtk::Box*>(notebook.get_tab_label(*page));
-		
-		TabLabel* tablabel = static_cast<TabLabel*>(box);
+		TabLabel* tab = static_cast<TabLabel*>(notebook.get_tab_label(*page));
         
-        return tablabel;
+		return tab;
     }
     
 	void JazzIDE::SaveFile()
