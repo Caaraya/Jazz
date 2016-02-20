@@ -127,9 +127,20 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 	if(iter)
 	{
 		AddFileToNotebook(file_tree.CurrentPath() + BuildPathToFile(*iter, file_tree.Root(), file_tree.Columns()),
-			[this](FileOpened file_status)
+			[this](FileOpened file_status, int which)
 		{
-			notebook.set_current_page(-1);
+			switch(file_status)
+			{
+			case FileOpened::Success:
+				notebook.set_current_page(-1);
+				break;
+			case FileOpened::Failure:
+				// Notify...
+				break;
+			case FileOpened::WasOpen:
+				notebook.set_current_page(which);
+				break;
+			}
 		});
 	}
 }
@@ -156,7 +167,7 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 			new_pos = thing.rfind("line=")+6U;
 			int line_num = std::stoi(thing.substr(new_pos, thing.find('"', new_pos)));  
 			
-			AddFileToNotebook(str, [this, str, line_num](FileOpened success){
+			AddFileToNotebook(str, [this, str, line_num](FileOpened success, int which){
 				switch(success)
 				{
 					case FileOpened::Success:
@@ -175,6 +186,7 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 					}break;
 					case FileOpened::WasOpen:
 					{
+						notebook.set_current_page(which);
 						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 						page->ScrollToLine(line_num);
 					}break;
