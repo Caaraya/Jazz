@@ -39,10 +39,13 @@ namespace Jazz
 		GtkTextIter GetTextIterAtLine(const int);
 		// Which line, a name and a category
 		GtkSourceMark* CreateMarkAtLine(const int, const Glib::ustring&, const Glib::ustring&);
+		GtkTextTag* CreateTag(const Glib::ustring& name, const gchar* = NULL, ...);
+		GtkTextTag* CreateTagAtLine(const int, const Glib::ustring&, const gchar* =NULL, ...);
 	private:
 		GtkSourceView* source_view = nullptr;
 		GtkSourceCompletion* completion = nullptr;
 		GtkSourceCompletionWords* completion_words = nullptr;
+		GtkSourceBuffer* source_buffer = nullptr;
 	private:
 		void UserAction();
 	};

@@ -173,10 +173,17 @@ bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
 					case FileOpened::Success:
 					{
 						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
+						GtkTextBuffer* buffer = GTK_TEXT_BUFFER(page->GetSourceBuffer());
 						BreakpointCallbackData* data = new BreakpointCallbackData{line_num, 0U, page};
 						data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
 							G_CALLBACK(OnSizeAllocate), (gpointer)data); 
 						page->ScrollToLine(line_num);
+						GdkRGBA bg_color = {.85,0.30,0.30,1.0};
+						auto tag = gtk_text_buffer_create_tag(buffer, "current-break",
+							"background-rgba", &bg_color, NULL);
+						auto line1 = page->GetTextIterAtLine(line_num-1);
+						auto line2 = page->GetTextIterAtLine(line_num);
+						gtk_text_buffer_apply_tag(buffer, tag, &line1, &line2);
 					}break;
 					case FileOpened::Failure:
 					{
