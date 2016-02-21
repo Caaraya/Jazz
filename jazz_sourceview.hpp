@@ -9,10 +9,6 @@ namespace Jazz
 		SourceView();
 		SourceView(GtkSourceBuffer*);
 		~SourceView();
-		GtkSourceView* GetSourceView() const;
-		GtkSourceBuffer* GetSourceBuffer() const;
-		GtkTextIter GetTextIterAtLine(const int);
-		void ScrollToLine(int);
 		void ShowLineNumbers(bool show)
 		{
 			gtk_source_view_set_show_line_numbers(source_view, static_cast<gboolean>(show));
@@ -37,6 +33,12 @@ namespace Jazz
 		{
 			return static_cast<bool>(gtk_source_view_get_highlight_current_line(source_view));
 		}
+		void ScrollToLine(int);
+		GtkSourceView* GetSourceView() const;
+		GtkSourceBuffer* GetSourceBuffer() const;
+		GtkTextIter GetTextIterAtLine(const int);
+		// Which line, a name and a category
+		GtkSourceMark* CreateMarkAtLine(const int, const Glib::ustring&, const Glib::ustring&);
 	private:
 		GtkSourceView* source_view = nullptr;
 		GtkSourceCompletion* completion = nullptr;

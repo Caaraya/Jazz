@@ -15,6 +15,7 @@ namespace Jazz
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
 		gtk_source_buffer_set_highlight_matching_brackets(GetSourceBuffer(), TRUE);
+		gtk_source_view_set_show_line_marks(source_view, TRUE);
 		ShowLineNumbers(true);
 		
 		show_all();
@@ -30,6 +31,7 @@ namespace Jazz
 		gtk_source_completion_add_provider(completion,
 			GTK_SOURCE_COMPLETION_PROVIDER(completion_words), nullptr);
 		gtk_source_buffer_set_highlight_matching_brackets(GetSourceBuffer(), TRUE);
+		gtk_source_view_set_show_line_marks(source_view, TRUE);
 		ShowLineNumbers(true);
 		
 		show_all();
@@ -59,6 +61,16 @@ namespace Jazz
 	void SourceView::ScrollToLine(int line)
 	{
 		GtkTextIter iter = GetTextIterAtLine(line);
-		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(GetSourceView()), &iter, 0.0, FALSE, 1.0, 1.0);
+		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(GetSourceView()),
+			&iter, 0.0, FALSE, 1.0, 1.0);
+	}
+	GtkSourceMark* SourceView::CreateMarkAtLine(
+		const int line,
+		const Glib::ustring& name,
+		const Glib::ustring& category)
+	{
+		auto text_iter = GetTextIterAtLine(line);
+		return gtk_source_buffer_create_source_mark(
+			GetSourceBuffer(), name.c_str(), category.c_str(), &text_iter);
 	}
 }
