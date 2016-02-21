@@ -72,24 +72,4 @@ namespace Jazz
 		return gtk_source_buffer_create_source_mark(
 			GetSourceBuffer(), name.c_str(), category.c_str(), &text_iter);
 	}
-	GtkTextTag* SourceView::CreateTag(const Glib::ustring& name, const gchar* first_prop, ...)
-	{
-		va_list args;
-		va_start(args, first_prop);
-		auto tag = gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(source_buffer),
-			name == "" ? NULL : name.c_str(), first_prop, args);
-		va_end(args);
-		return tag;
-	}
-	GtkTextTag* SourceView::CreateTagAtLine(const int line, const Glib::ustring& name, const gchar* first_prop, ...)
-	{
-		va_list args;
-		va_start(args, first_prop);
-		auto tag = CreateTag(name, first_prop, args);
-		va_end(args);
-		auto line1 = GetTextIterAtLine(line);
-		auto line2 = GetTextIterAtLine(line+1);
-		gtk_text_buffer_apply_tag(GTK_TEXT_BUFFER(source_buffer), tag, &line1, &line2);
-		return tag;
-	}
 }
