@@ -53,8 +53,9 @@ namespace Jazz
 		void SaveFileAs();
 		void OpenFile();
 		// String filename
-		// Call back with a bool representing success
-		void AddFileToNotebook(const Glib::ustring&, std::function<void(FileOpened)>);
+		// Call back with an enum value indicating success, failure or if it was already open
+		// as well as an integer to indicate which tab the file was opened in, if at all
+		void AddFileToNotebook(const Glib::ustring&, std::function<void(FileOpened, int)>);
 		void OpenProject();
 		void OpenFolder();
         void OpenFileFromTree(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
@@ -64,7 +65,9 @@ namespace Jazz
 		bool HandleGDBOutput(Glib::IOCondition, const Glib::ustring&);
 		void ExecuteProject();
 		void DebugContinueCmd();
-		bool IsFileOpen(const Glib::ustring& fullpath);
+		// Returns true to indicate if a file is open in the editor,
+		// and an integer parameter to indicate which tab it is
+		bool IsFileOpen(const Glib::ustring& fullpath, int& out_which);
 	private:
 		GtkSourceLanguageManager* language_manager;
 		std::unique_ptr<GdbInstance> gdb;
