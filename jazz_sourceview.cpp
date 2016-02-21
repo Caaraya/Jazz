@@ -21,9 +21,8 @@ namespace Jazz
 		show_all();
 	}
 	SourceView::SourceView(GtkSourceBuffer* source_buffer):
-		Gtk::ScrolledWindow(), source_buffer(GTK_SOURCE_BUFFER(source_buffer)),
-		source_view(GTK_SOURCE_VIEW(gtk_source_view_new_with_buffer(
-			GTK_SOURCE_BUFFER(source_buffer))))
+		Gtk::ScrolledWindow(), source_view(GTK_SOURCE_VIEW(gtk_source_view_new_with_buffer(
+			GTK_SOURCE_BUFFER(source_buffer)))), source_buffer(GTK_SOURCE_BUFFER(source_buffer))
 	{	
 		add(*Glib::wrap(GTK_WIDGET(source_view)));
 		

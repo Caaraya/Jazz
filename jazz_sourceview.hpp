@@ -23,9 +23,9 @@ namespace Jazz
 		GtkSourceMark* CreateMarkAtLine(const int, const Glib::ustring&, const Glib::ustring&);
 	private:
 		GtkSourceView* source_view = nullptr;
+		GtkSourceBuffer* source_buffer = nullptr;
 		GtkSourceCompletion* completion = nullptr;
 		GtkSourceCompletionWords* completion_words = nullptr;
-		GtkSourceBuffer* source_buffer = nullptr;
 	private:
 		void UserAction();
 	};
