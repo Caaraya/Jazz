@@ -64,7 +64,6 @@ namespace Jazz
 		void SetNewPageFont();
 		bool HandleGDBOutput(Glib::IOCondition, const Glib::ustring&);
 		void ExecuteProject();
-		void DebugContinueCmd();
 		// Returns true to indicate if a file is open in the editor,
 		// and an integer parameter to indicate which tab it is
 		bool IsFileOpen(const Glib::ustring& fullpath, int& out_which);
