@@ -1,3 +1,6 @@
 [submodule "coralscript"]
 	path = coralscript
 	url = https://github.com/Racinettee/coralscript
+[submodule "FlintPlusPlus"]
+	path = FlintPlusPlus
+	url = https://github.com/L2Program/FlintPlusPlus.git
