@@ -45,4 +45,12 @@ namespace Jazz
 		ctxt_menu.accelerate(*this);
 		ctxt_menu.show_all();
 	}
+	bool WatchTreeView::TreeView::on_button_press_event(GdkEventButton* btn)
+	{
+		return true;
+	}
+	void WatchTreeView::TreeView::on_menu_file_popup_generic()
+	{
+		
+	}
 }
