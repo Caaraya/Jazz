@@ -47,10 +47,24 @@ namespace Jazz
 	}
 	bool WatchTreeView::TreeView::on_button_press_event(GdkEventButton* btn)
 	{
-		return true;
+		bool return_value = false;
+		return_value = Gtk::TreeView::on_button_press_event(btn);
+		if((btn->type == GDK_BUTTON_PRESS) && (btn->button == 3))
+			ctxt_menu.popup(btn->button, btn->time);
+		return return_value;
 	}
 	void WatchTreeView::TreeView::on_menu_file_popup_generic()
 	{
+		puts("A popup menu item was selected.");
+		auto selection = get_selection();
+		if(selection)
+		{
+			auto iter = selection->get_selected();
+			if(iter)
+			{
+				//int id = (*iter)[]
+			}
+		}
 		
 	}
 }
