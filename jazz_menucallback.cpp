@@ -52,9 +52,19 @@ namespace Jazz
 		{
 			gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 			
-			AddFileToNotebook(filename, [this](FileOpened success){
-				if(success == FileOpened::Success)
+			AddFileToNotebook(filename, [this](FileOpened success, int which){
+				switch(success)
+				{
+				case FileOpened::Success:
 					notebook.set_current_page(-1);
+					break;
+				case FileOpened::WasOpen:
+					notebook.set_current_page(which);
+					break;
+				case FileOpened::Failure:
+					// Notify...
+					break;
+				}
 			});
 		}
 		gtk_widget_destroy(dialog);
@@ -189,18 +199,18 @@ namespace Jazz
 		}				
 	}
 	// Pass in a function object as the callback, the callback will accept a bool indicating success
-	void JazzIDE::AddFileToNotebook(const Glib::ustring& fname, std::function<void(FileOpened)> callback)
+	void JazzIDE::AddFileToNotebook(const Glib::ustring& fname, std::function<void(FileOpened, int)> callback)
 	{
 		GFile* new_file = nullptr;
 		GtkSourceFile* new_source_file = nullptr;
 		GtkSourceFileLoader* loader = nullptr;
 		GtkSourceBuffer* buff = nullptr;
 		FileOpened file_open_success = FileOpened::Failure;
-		
-		if(IsFileOpen(fname))
+		int which_tab = -1;
+		if(IsFileOpen(fname, which_tab))
 		{
 			file_open_success = FileOpened::WasOpen;
-			callback(file_open_success);
+			callback(file_open_success, which_tab);
 			return;
 		}
 		else
@@ -220,7 +230,7 @@ namespace Jazz
 		struct load_async_finish_data
 		{
 			GtkSourceFileLoader* loader;
-			std::function<void(FileOpened)> callback;
+			std::function<void(FileOpened, int)> callback;
 			Glib::ustring file_name;
 			GtkSourceBuffer* source_buffer;
 			JazzIDE* jazz_ide;
@@ -276,7 +286,7 @@ namespace Jazz
 			// Free the file that we were working with since we're done
 			g_object_unref(final_data->the_file);
 			// Call the users callback function
-			final_data->callback(final_data->file_open_success);
+			final_data->callback(final_data->file_open_success, -1);
 			// Delete the instantation of the data we needed to keep a copy of
 			delete final_data;
 		}, 
@@ -313,13 +323,16 @@ namespace Jazz
 			break;
 		}
 	}
-	bool JazzIDE::IsFileOpen(const Glib::ustring& fullpath)
+	bool JazzIDE::IsFileOpen(const Glib::ustring& fullpath, int& which)
 	{
 		for(int i = 0; i < notebook.get_n_pages(); i++)
 		{
 			const TabLabel* tab_label = static_cast<TabLabel*>(notebook.get_tab_label(*notebook.get_nth_page(i)));
 			if(tab_label->FullPath() == fullpath)
+			{
+				which = i;
 				return true;
+			}
 		}
 		return false;
 	}

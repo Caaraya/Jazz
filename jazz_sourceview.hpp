@@ -9,36 +9,21 @@ namespace Jazz
 		SourceView();
 		SourceView(GtkSourceBuffer*);
 		~SourceView();
+		void ShowLineNumbers(bool show);
+		bool IsShowingLineNumbers() const;
+		void ShowRightMargin(bool show);
+		bool IsShowingRightMargin() const;
+		void HighlightCurrentLine(bool light);
+		bool IsHighlightingCurrentLine() const;
+		void ScrollToLine(int);
 		GtkSourceView* GetSourceView() const;
 		GtkSourceBuffer* GetSourceBuffer() const;
 		GtkTextIter GetTextIterAtLine(const int);
-		void ScrollToLine(int);
-		void ShowLineNumbers(bool show)
-		{
-			gtk_source_view_set_show_line_numbers(source_view, static_cast<gboolean>(show));
-		}
-		bool IsShowingLineNumbers() const
-		{
-			return static_cast<bool>(gtk_source_view_get_show_line_numbers(source_view));
-		}
-		void ShowRightMargin(bool show)
-		{
-			gtk_source_view_set_show_right_margin(source_view, static_cast<gboolean>(show));
-		}
-		bool IsShowingRightMargin() const
-		{
-			return static_cast<bool>(gtk_source_view_get_show_right_margin(source_view));
-		}
-		void HighlightCurrentLine(bool light)
-		{
-			gtk_source_view_set_highlight_current_line(source_view, static_cast<gboolean>(light));
-		}
-		bool IsHighlightingCurrentLine() const
-		{
-			return static_cast<bool>(gtk_source_view_get_highlight_current_line(source_view));
-		}
+		// Which line, a name and a category
+		GtkSourceMark* CreateMarkAtLine(const int, const Glib::ustring&, const Glib::ustring&);
 	private:
 		GtkSourceView* source_view = nullptr;
+		GtkSourceBuffer* source_buffer = nullptr;
 		GtkSourceCompletion* completion = nullptr;
 		GtkSourceCompletionWords* completion_words = nullptr;
 	private:

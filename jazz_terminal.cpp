@@ -3,9 +3,9 @@
 namespace Jazz
 {
 	Terminal::Terminal(int max_lines, int remove_lines): 
-		buffer_max_lines(max_lines), buffer_remove_lines(remove_lines),
 		text_view(Gtk::manage(new Gtk::TextView)),
-		buffer(text_view->get_buffer())
+		buffer(text_view->get_buffer()),
+		buffer_max_lines(max_lines), buffer_remove_lines(remove_lines)
 	{
 		text_view->set_editable(false);
 		text_view->set_wrap_mode(Gtk::WrapMode::WRAP_CHAR);
