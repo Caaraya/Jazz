@@ -17,10 +17,23 @@ namespace Jazz
 			Gtk::TreeModelColumn<Glib::ustring> variable_name;
 			Gtk::TreeModelColumn<Glib::ustring> variable_value;
 		};
+		class TreeView : public Gtk::TreeView
+		{
+		public:
+			TreeView();
+		private:
+			// Override signal handlere
+			bool on_button_press_event(GdkEventButton*) override;
+			// Signal handler for  popup menu items
+			void on_menu_file_popup_generic();
+		private:
+			Gtk::Menu ctxt_menu;	
+		};
 	private:
 		Glib::RefPtr<Gtk::TreeStore> watch_tree_store;
-		Gtk::TreeView watch_tree_view;
-		ColumnModel watch_columns;	
+		TreeView watch_tree_view;
+		ColumnModel watch_columns;
+		Gtk::Menu ctxt_menu;	
 	};
 	class WatchWindow : public Gtk::Window
 	{

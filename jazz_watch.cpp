@@ -31,4 +31,18 @@ namespace Jazz
 		add(variable_name);
 		add(variable_value);
 	}
+	WatchTreeView::TreeView::TreeView()
+	{
+		auto item = Gtk::manage(new Gtk::MenuItem("_Edit", true));
+		item->signal_activate().connect(
+			sigc::mem_fun(*this, &TreeView::on_menu_file_popup_generic));
+		ctxt_menu.append(*item);
+		
+		item = Gtk::manage(new Gtk::MenuItem("_Process", true));
+		item->signal_activate().connect(
+    		sigc::mem_fun(*this, &TreeView::on_menu_file_popup_generic));
+		
+		ctxt_menu.accelerate(*this);
+		ctxt_menu.show_all();
+	}
 }

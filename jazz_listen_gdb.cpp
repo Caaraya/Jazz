@@ -1,4 +1,5 @@
 #include "jazz.hpp"
+#include "jazz_sourceview.hpp"
 namespace Jazz
 {
 	bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
