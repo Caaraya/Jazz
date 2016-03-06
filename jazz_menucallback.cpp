@@ -76,7 +76,7 @@ namespace Jazz
 		
 		TabLabel* tabLabel = GetTabLabel();
         
-        if(tabLabel == nullptr) return;
+		if(tabLabel == nullptr) return;
 		
 		if(!tabLabel->FullPath().empty())
 		{
