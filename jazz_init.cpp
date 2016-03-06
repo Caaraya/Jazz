@@ -107,12 +107,6 @@ JazzIDE::~JazzIDE()
 }
 namespace
 {
-	struct BreakpointCallbackData
-	{
-		int line;
-		gulong signal_id;
-		SourceView* source_view;
-	};
     Glib::ustring BuildPathToFile(Gtk::TreeModel::Row row, Gtk::TreeModel::Row root_node, Jazz::FileTreeModelColumns& columns)
     {
         if(row == root_node)
@@ -143,14 +137,5 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 			}
 		});
 	}
-}
-static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
-{
-	BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);
-	callback->source_view->ScrollToLine(callback->line);
-	
-	// We need to come up with a way to delete the user data after the signal is disconnected at some point
-	//g_signal_handler_disconnect(view, callback->signal_id);
-	//delete callback;
 }
 }

@@ -13,7 +13,6 @@
 		path_to: "./"
 	},
 	breakpoints: [
-		"b gdb_test.cpp:12",
 		"b gdb_test.cpp:32"
 	],
 	source_files: [

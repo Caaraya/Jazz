@@ -1,4 +1,29 @@
 #include "jazz.hpp"
+#include "jazz_util.hpp"
+#include "jazz_sourceview.hpp"
+namespace
+{
+	struct BreakpointCallbackData
+	{
+		int line;
+		gulong signal_id;
+		Jazz::SourceView* source_view;
+	};
+	static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
+	{
+		if(user_data)
+		{
+			BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);
+			callback->source_view->ScrollToLine(callback->line);
+			
+			// We need to come up with a way to delete the user data after the signal is disconnected at some point
+			//g_signal_handler_disconnect(view, callback->signal_id);
+			delete callback;
+			user_data = nullptr;
+			callback = nullptr;
+		}
+	}
+}
 namespace Jazz
 {
 	bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
