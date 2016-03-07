@@ -31,7 +31,7 @@ namespace Jazz
 		append_column("Value", watch_columns.variable_value);
 		
 		watch_tree_store = Gtk::TreeStore::create(watch_columns);
-		watch_tree_view.set_model(watch_tree_store);
+		set_model(watch_tree_store);
 		
 		auto item = Gtk::manage(new Gtk::MenuItem("_Add Watch", true));
 		item->signal_activate().connect(
@@ -71,8 +71,8 @@ namespace Jazz
 	void WatchTreeView::TreeView::AddRow(const Glib::ustring& fn, const Glib::ustring& varname, const Glib::ustring& val)
 	{
 		Gtk::TreeModel::Row row = *(watch_tree_store->append());
-		row[watch_columns.filename] = filename;
-		row[watch_columns.variable_name] = variable_name;
-		row[watch_columns.variable_value] = variable_value;
+		row[watch_columns.filename] = fn;
+		row[watch_columns.variable_name] = varname;
+		row[watch_columns.variable_value] = val;
 	}
 }
