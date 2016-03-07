@@ -33,14 +33,15 @@ namespace Jazz
 	}
 	WatchTreeView::TreeView::TreeView()
 	{
-		auto item = Gtk::manage(new Gtk::MenuItem("_Edit", true));
+		auto item = Gtk::manage(new Gtk::MenuItem("_Add Watch", true));
 		item->signal_activate().connect(
 			sigc::mem_fun(*this, &TreeView::on_menu_file_popup_generic));
 		ctxt_menu.append(*item);
 		
-		item = Gtk::manage(new Gtk::MenuItem("_Process", true));
+		item = Gtk::manage(new Gtk::MenuItem("_Delete Watch", true));
 		item->signal_activate().connect(
     		sigc::mem_fun(*this, &TreeView::on_menu_file_popup_generic));
+		ctxt_menu.append(*item);
 		
 		ctxt_menu.accelerate(*this);
 		ctxt_menu.show_all();
