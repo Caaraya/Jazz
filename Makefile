@@ -9,7 +9,7 @@ LDFLAGS=`pkg-config --libs gtksourceview-3.0 gtkmm-3.0 libxml-2.0` -L./coralscri
 
 all: jazz.o jazz_init.o jazz_tablabel.o jazz_sourceview.o jazz_menucallback.o\
 		 jazz_filetree.o jazz_watch.o jazz_gdb.o jazz_projecttree.o jazz_newproj_dialog.o jazz_util.o\
-		 jazz_toolbarcallback.o jazz_terminal.o
+		 jazz_toolbarcallback.o jazz_terminal.o jazz_flint.o
 	mkdir -p bin
 	$(CXX) $^ $(LDFLAGS) -o bin/jazz
 	
@@ -54,6 +54,9 @@ jazz_toolbarcallback.o: jazz_toolbarcallback.cpp
 	
 jazz_terminal.o: jazz_terminal.cpp
 	$(CXX) $(CFLAGS) jazz_terminal.cpp
+
+jazz_flint.o: jazz_flint.cpp
+    $(CXX) $(CFLAGS) jazz_flint.cpp
 
 clean:
 	rm -rf *.o
