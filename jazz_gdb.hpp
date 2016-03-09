@@ -5,8 +5,7 @@ namespace Jazz
 	class GdbInstance
 	{
 	public:
-		typedef std::function<bool(Glib::IOCondition, const Glib::ustring&)>
-			HandlerType;
+		typedef std::function<bool(Glib::IOCondition, const Glib::ustring&)> HandlerType;
 	public:
 		GdbInstance(const char* path_to_exec);
 		~GdbInstance();

@@ -41,8 +41,4 @@ namespace Jazz
 			ShowMessage(e.what());
 		}
 	}
-	void JazzIDE::DebugContinueCmd()
-	{
-		gdb->Command("c");
-	}
 }

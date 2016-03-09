@@ -52,8 +52,8 @@ JazzIDE::JazzIDE(): box(Gtk::ORIENTATION_VERTICAL, 1),
 	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::ExecuteProject));
 	
 	builder->get_widget("tb_resumedbg", titem);
-	titem->signal_clicked().connect(sigc::mem_fun(*this, &JazzIDE::DebugContinueCmd));
-	titem->set_tooltip_text("Continue");
+	titem->signal_clicked().connect([this]() { gdb->Command("c"); });
+	titem->set_tooltip_text("Continue executing");
 	
 	builder->get_widget("tb_stepout", titem);
 	titem->signal_clicked().connect([this](){ gdb->Command("finish"); });
@@ -107,12 +107,6 @@ JazzIDE::~JazzIDE()
 }
 namespace
 {
-	struct BreakpointCallbackData
-	{
-		int line;
-		gulong signal_id;
-		SourceView* source_view;
-	};
     Glib::ustring BuildPathToFile(Gtk::TreeModel::Row row, Gtk::TreeModel::Row root_node, Jazz::FileTreeModelColumns& columns)
     {
         if(row == root_node)
@@ -143,57 +137,5 @@ void JazzIDE::OpenFileFromTree(const Gtk::TreeModel::Path& path, Gtk::TreeViewCo
 			}
 		});
 	}
-}
-static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
-{
-	BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);
-	callback->source_view->ScrollToLine(callback->line);
-	
-	// We need to come up with a way to delete the user data after the signal is disconnected at some point
-	//g_signal_handler_disconnect(view, callback->signal_id);
-	//delete callback;
-}
-bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
-{
-	if(thing[0] == '*')
-	{
-		if(thing.find("breakpoint-hit") !=  Glib::ustring::npos)
-		{
-			// Find the fullname property and open that file
-			auto new_pos = thing.rfind("fullname=")+10U;
-			auto str = thing.substr(new_pos);
-			str = str.substr(0, str.find('"'));
-			
-			new_pos = thing.rfind("line=")+6U;
-			int line_num = std::stoi(thing.substr(new_pos, thing.find('"', new_pos)));  
-			
-			AddFileToNotebook(str, [this, str, line_num](FileOpened success, int which){
-				switch(success)
-				{
-					case FileOpened::Success:
-					{
-						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
-						BreakpointCallbackData* data = new BreakpointCallbackData{line_num, 0U, page};
-						data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
-							G_CALLBACK(OnSizeAllocate), (gpointer)data); 
-						page->ScrollToLine(line_num);
-					}break;
-					case FileOpened::Failure:
-					{
-						// In the future we should use lib notify to inform the user that this operation didn't work
-						ShowMessage("Breakpoint hit but could not open"
-										" the file" + str + " successfully", this);
-					}break;
-					case FileOpened::WasOpen:
-					{
-						notebook.set_current_page(which);
-						SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
-						page->ScrollToLine(line_num);
-					}break;
-				}
-			});
-		}
-	}
-	return true;
 }
 }
