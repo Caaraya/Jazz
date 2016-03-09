@@ -1,29 +1,7 @@
 #include "jazz.hpp"
 #include "jazz_util.hpp"
 #include "jazz_sourceview.hpp"
-namespace
-{
-	struct BreakpointCallbackData
-	{
-		int line;
-		gulong signal_id;
-		Jazz::SourceView* source_view;
-	};
-	static void OnSizeAllocate(GtkTextView* view, GdkRectangle*, gpointer user_data)
-	{
-		if(user_data)
-		{
-			BreakpointCallbackData* callback = static_cast<BreakpointCallbackData*>(user_data);
-			callback->source_view->ScrollToLine(callback->line);
-			
-			// We need to come up with a way to delete the user data after the signal is disconnected at some point
-			//g_signal_handler_disconnect(view, callback->signal_id);
-			delete callback;
-			user_data = nullptr;
-			callback = nullptr;
-		}
-	}
-}
+
 namespace Jazz
 {
 	bool JazzIDE::HandleGDBOutput(Glib::IOCondition, const Glib::ustring& thing)
@@ -48,10 +26,12 @@ namespace Jazz
 						{
 							SourceView* page = static_cast<SourceView*>(notebook.get_nth_page(notebook.get_current_page()));
 							GtkTextBuffer* buffer = GTK_TEXT_BUFFER(page->GetSourceBuffer());
-							BreakpointCallbackData* data = new BreakpointCallbackData{line_num, 0U, page};
-							data->signal_id = g_signal_connect(GTK_WIDGET(page->GetSourceView()), "size-allocate",
-								G_CALLBACK(OnSizeAllocate), (gpointer)data); 
-							page->ScrollToLine(line_num);
+							Gtk::TextView* text_view = Glib::wrap(GTK_TEXT_VIEW(page->GetSourceView()));
+							
+							text_view->signal_size_allocate().connect([line_num, page](Gdk::Rectangle&) {
+								page->ScrollToLine(line_num);
+							});
+							
 							GdkRGBA bg_color = {.85,0.30,0.30,1.0};
 							auto tag = gtk_text_buffer_create_tag(buffer, "current-break",
 								"background-rgba", &bg_color, NULL);
@@ -64,7 +44,7 @@ namespace Jazz
 							// In the future we should use lib notify to inform the user that this operation didn't work
 							ShowMessage("Breakpoint hit but could not open"
 											" the file" + str + " successfully", this);
-							return;
+							//return;
 						}break;
 						case FileOpened::WasOpen:
 						{
